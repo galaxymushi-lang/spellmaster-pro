@@ -202,15 +202,17 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </head>
 <body>
 
-<!-- Welcome -->
+<!-- License Key Screen -->
 <div id="licenseScreen" class="screen welcome-screen">
-    <div class="mascot-big">🔒</div>
+    <div class="mascot-big">🔑</div>
     <h1 class="welcome-title">SpellMaster Pro</h1>
-    <p class="welcome-sub">Enter password to continue</p>
-    <input type="password" id="licensePass" class="nm-in" placeholder="Enter password..." onkeypress="if(event.key==='Enter')checkLicenseBtn()">
+    <p class="welcome-sub">Enter your license key to activate</p>
+    <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase" onkeypress="if(event.key==='Enter')activateBtn()">
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
-    <button class="btn btn-p" onclick="checkLicenseBtn()">Unlock 🔓</button>
-    <p style="margin-top:15px;font-size:.75rem;opacity:.7">Contact: your-email@gmail.com</p>
+    <button class="btn btn-p" onclick="activateBtn()">Activate ✅</button>
+    <p style="margin-top:15px;font-size:.75rem;opacity:.7">Get your key from the app administrator</p>
+    <p style="margin-top:8px;font-size:.7rem;opacity:.5">Need a key? Contact: your-email@gmail.com</p>
+    <button style="margin-top:12px;background:none;border:none;color:var(--txt2);font-size:.75rem;cursor:pointer" onclick="openKeyGen()">⚙️ Admin</button>
 </div>
 
 <div id="welcomeScreen" class="screen welcome-screen hidden">
@@ -477,14 +479,10 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div class="sett-item"><span class="sett-lb">👤 Switch User</span><button class="btn btn-s btn-sm" onclick="switchUser()">Switch</button></div>
         <div class="sett-item" style="flex-direction:column;align-items:flex-start;gap:5px;border-top:1px solid var(--border);padding-top:15px;margin-top:10px">
             <span class="sett-lb">🔑 License Info</span>
-            <div style="font-size:.8rem;color:var(--txt2)">
-                <p>Days remaining: <strong id="daysLeftDisplay">${getDaysLeft()}</strong> / ${LICENSE.maxDays}</p>
-                <p>Contact: your-email@gmail.com</p>
+            <div style="font-size:.8rem;color:var(--txt2)" id="licenseInfoDiv">
+                <p>Loading license info...</p>
             </div>
-            <div style="display:flex;gap:8px">
-                <input type="password" id="adminPassIn" class="nm-in" style="width:120px" placeholder="Admin pass">
-                <button class="btn btn-s btn-sm" style="background:var(--sec)" onclick="adminReset()">Reset License</button>
-            </div>
+            <button class="btn btn-s btn-sm" style="background:var(--sec);margin-top:5px" onclick="openKeyGen()">⚙️ Generate New Key</button>
         </div>
         <div class="sett-item"><span class="sett-lb">🗑️ Reset</span><button class="btn btn-no btn-sm" onclick="resetAll()">Reset</button></div>
     </div>
@@ -501,68 +499,85 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 <div id="starsC" class="stars-c"></div>
 
 <script>
-// ===== LICENSE & EXPIRY SYSTEM =====
-const LICENSE = {
-    key: 'SPELLMASTER-2024-PRO',  // Leseni key yako
-    maxDays: 30,                   // Siku za matumizi
-    password: 'spell123',          // Neno la siri la kuingia
-    adminPass: 'admin2024'         // Neno la siri la admin
-};
+// ===== LICENSE KEY SYSTEM =====
+const ADMIN_SECRET = 'SPELLMASTER-ADMIN-2024';
+
+function generateKey(days, adminPassword) {
+    if (adminPassword !== 'admin2024') return null;
+    const expiry = Date.now() + (days * 86400000);
+    const raw = `${days}|${expiry}`;
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+    }
+    const sig = Math.abs(hash).toString(36).toUpperCase();
+    const enc = btoa(raw);
+    return `SM-${enc}-${sig}`;
+}
+
+function decodeKey(key) {
+    try {
+        if (!key || !key.startsWith('SM-')) return null;
+        const parts = key.split('-');
+        if (parts.length < 3) return null;
+        const enc = parts[1];
+        const sig = parts[2];
+        const raw = atob(enc);
+        let hash = 0;
+        for (let i = 0; i < raw.length; i++) {
+            hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+            hash |= 0;
+        }
+        if (Math.abs(hash).toString(36).toUpperCase() !== sig) return null;
+        const [days, expiry] = raw.split('|');
+        return { days: parseInt(days), expiry: parseInt(expiry) };
+    } catch (e) {
+        return null;
+    }
+}
 
 function checkLicense() {
     const data = JSON.parse(localStorage.getItem('sm_license') || '{}');
-    const today = new Date().toDateString();
-    
-    // First time user
-    if (!data.installDate) {
-        return { valid: false, reason: 'new' };
-    }
-    
-    // Check password
-    if (!data.authenticated) {
-        return { valid: false, reason: 'password' };
-    }
-    
-    // Check expiry
-    const installDate = new Date(data.installDate);
-    const now = new Date();
-    const daysUsed = Math.floor((now - installDate) / 86400000);
-    
-    if (daysUsed >= LICENSE.maxDays) {
+    if (!data.key) return { valid: false, reason: 'no_key' };
+    const decoded = decodeKey(data.key);
+    if (!decoded) return { valid: false, reason: 'invalid' };
+    if (Date.now() > decoded.expiry) {
+        const daysUsed = Math.floor((Date.now() - (decoded.expiry - decoded.days * 86400000)) / 86400000);
         return { valid: false, reason: 'expired', days: daysUsed };
     }
-    
-    return { valid: true, daysLeft: LICENSE.maxDays - daysUsed };
+    const daysLeft = Math.ceil((decoded.expiry - Date.now()) / 86400000);
+    return { valid: true, daysLeft, totalDays: decoded.days };
 }
 
-function initLicense() {
-    const data = JSON.parse(localStorage.getItem('sm_license') || '{}');
-    if (!data.installDate) {
-        data.installDate = new Date().toISOString();
-    }
+function activateKey(key) {
+    const decoded = decodeKey(key);
+    if (!decoded) return false;
+    if (Date.now() > decoded.expiry) return false;
+    const data = { key, activatedAt: new Date().toISOString() };
     localStorage.setItem('sm_license', JSON.stringify(data));
-}
-
-function authenticate(password) {
-    if (password === LICENSE.password || password === LICENSE.adminPass) {
-        const data = JSON.parse(localStorage.getItem('sm_license') || '{}');
-        data.authenticated = true;
-        data.lastLogin = new Date().toISOString();
-        localStorage.setItem('sm_license', JSON.stringify(data));
-        return true;
-    }
-    return false;
+    return true;
 }
 
 function getDaysLeft() {
-    const data = JSON.parse(localStorage.getItem('sm_license') || '{}');
-    if (!data.installDate) return LICENSE.maxDays;
-    const days = Math.floor((new Date() - new Date(data.installDate)) / 86400000);
-    return Math.max(0, LICENSE.maxDays - days);
+    const lic = checkLicense();
+    return lic.valid ? lic.daysLeft : 0;
 }
 
 function resetLicense() {
     localStorage.removeItem('sm_license');
+}
+
+// ===== KEY GENERATOR (For Admin) =====
+function openKeyGen() {
+    const pass = prompt('Enter admin password:');
+    if (pass !== 'admin2024') { alert('❌ Wrong password!'); return; }
+    const days = prompt('Enter license duration (days):', '30');
+    if (!days) return;
+    const key = generateKey(parseInt(days), 'admin2024');
+    const decoded = decodeKey(key);
+    const expDate = new Date(decoded.expiry).toLocaleDateString();
+    alert(`🔑 LICENSE KEY (valid ${days} days, expires ${expDate}):\n\n${key}\n\n📋 Copy this key and give it to the user.`);
 }
 
 // ===== STATE =====
@@ -696,23 +711,26 @@ function speak(text,rate){
 function save(){const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}
 function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.parse(v));return true}return false}
 
-// ===== LICENSE CHECK =====
-function checkLicenseBtn() {
-    const pass = document.getElementById('licensePass').value;
+// ===== LICENSE ACTIVATION =====
+function activateBtn() {
+    const key = document.getElementById('licenseKeyIn').value.trim().toUpperCase();
     const msg = document.getElementById('licenseMsg');
     
-    if (authenticate(pass)) {
+    if (!key) {
+        msg.textContent = '⚠️ Please enter a license key';
+        return;
+    }
+    
+    if (activateKey(key)) {
         msg.style.color = 'var(--ok)';
-        msg.textContent = '✅ Access granted!';
-        initLicense();
+        msg.textContent = '✅ License activated!';
         setTimeout(() => {
             document.getElementById('licenseScreen').classList.add('hidden');
             document.getElementById('welcomeScreen').classList.remove('hidden');
         }, 800);
     } else {
         msg.style.color = 'var(--sec)';
-        msg.textContent = '❌ Wrong password. Try again.';
-        document.getElementById('licensePass').value = '';
+        msg.textContent = '❌ Invalid or expired key. Contact admin.';
     }
 }
 
@@ -1031,14 +1049,14 @@ function togHintSet(){S.sett.hints=!S.sett.hints;document.getElementById('hntTog
 function chgSpd(){S.sett.spd=parseFloat(document.getElementById('spSpd').value);save()}
 function setSndTheme(t,el){S.sett.sndTheme=t;save();pSnd('click');document.querySelectorAll('.snd-card').forEach(c=>c.classList.remove('act'));el.classList.add('act')}
 function switchUser(){S.lastUser=null;S.lastAvatar=null;S.rememberMe=false;S.name='';save();location.reload()}
-function adminReset(){
-    const pass=document.getElementById('adminPassIn').value;
-    if(pass===LICENSE.adminPass){
-        resetLicense();
-        alert('✅ License reset! Reloading...');
-        location.reload();
+function updateLicenseInfo(){
+    const div=document.getElementById('licenseInfoDiv');
+    if(!div)return;
+    const lic=checkLicense();
+    if(lic.valid){
+        div.innerHTML=`<p style="color:var(--ok)">✅ Active - <strong>${lic.daysLeft} days</strong> remaining</p><p>Total: ${lic.totalDays} days</p>`;
     } else {
-        alert('❌ Wrong admin password');
+        div.innerHTML=`<p style="color:var(--sec)">❌ ${lic.reason==='expired'?'Expired':'No license'}</p>`;
     }
 }
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
@@ -1069,7 +1087,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         document.getElementById('licenseScreen').classList.remove('hidden');
         if(lic.reason==='expired'){
             document.getElementById('licenseMsg').style.color='var(--sec)';
-            document.getElementById('licenseMsg').textContent=`⚠️ License expired! Contact admin.`;
+            document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
         }
         return;
     }
@@ -1077,6 +1095,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(loaded&&S.rememberMe&&S.lastUser){applyTheme();S.name=S.lastUser;if(S.lastAvatar)S.avatar=S.lastAvatar;initDash()}
     else{showScr('welcome');if(loaded)applyTheme()}
     document.getElementById('nameIn').addEventListener('keypress',e=>{if(e.key==='Enter')startApp()});
+    updateLicenseInfo();
 });
 </script>
 </body>
