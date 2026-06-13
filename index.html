@@ -1619,8 +1619,21 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(S.wLearn>=100){const btn=document.getElementById('certBtn');if(btn)btn.disabled=false}
     const savedEmail=localStorage.getItem('sm_backupEmail');
     if(savedEmail){const e1=document.getElementById('backupEmail');if(e1)e1.value=savedEmail;const e2=document.getElementById('pBackupEmail');if(e2)e2.value=savedEmail}
-    // Service Worker
-    if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+    // Service Worker & Auto-Update
+    if('serviceWorker' in navigator){
+        navigator.serviceWorker.register('sw.js').then(reg=>{
+            reg.addEventListener('updatefound',()=>{
+                const newWorker=reg.installing;
+                newWorker.addEventListener('statechange',()=>{
+                    if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
+                        if(confirm('🔄 New version available! Update now?')){newWorker.postMessage('skipWaiting');location.reload()}
+                    }
+                });
+            });
+        }).catch(()=>{});
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
+    }
     setInterval(saveCurrentProfile,30000);
 });
 </script>
