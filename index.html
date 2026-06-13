@@ -21,6 +21,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatItem{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-12px) rotate(5deg)}50%{transform:translateY(-6px) rotate(-3deg)}75%{transform:translateY(-15px) rotate(3deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 .welcome-sub{font-size:1.1rem;margin-bottom:20px;opacity:.9}
@@ -272,8 +274,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase;animation:fadeInUp 1.2s ease" onkeypress="if(event.key==='Enter')activateBtn()">
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
     <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
-    <p style="margin-top:15px;font-size:.75rem;opacity:.7;animation:fadeInUp 1.6s ease">Get your key from the app administrator</p>
-    <button class="btn btn-s" onclick="try{openKeyGen()}catch(e){alert('Error: '+e.message)}" style="margin-top:15px;animation:fadeInUp 1.8s ease;font-size:.85rem">⚙️ Admin Panel</button>
     <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
 </div>
 
@@ -371,11 +371,21 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <div id="welcomeScreen" class="screen welcome-screen hidden">
-    <div class="mascot-big" id="mascotBig" style="animation:float 2s ease-in-out infinite">🦉</div>
-    <h1 class="welcome-title" style="animation:bounce 2s ease infinite">SpellMaster Pro</h1>
-    <p class="welcome-sub" style="animation:fadeInUp 1s ease">Learn to spell with fun! 🔤</p>
-    <p style="margin-bottom:6px;font-size:.85rem;opacity:.9;animation:fadeInUp 1.2s ease">Choose your mascot:</p>
-    <div class="avatar-sel" style="animation:fadeInUp 1.4s ease">
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:0">
+        <div style="position:absolute;font-size:2rem;top:10%;left:8%;animation:floatItem 4s ease-in-out infinite;opacity:.6">📚</div>
+        <div style="position:absolute;font-size:1.8rem;top:15%;right:10%;animation:floatItem 5s ease-in-out infinite 0.5s;opacity:.5">✨</div>
+        <div style="position:absolute;font-size:2.2rem;top:60%;left:5%;animation:floatItem 3.5s ease-in-out infinite 1s;opacity:.5">🌟</div>
+        <div style="position:absolute;font-size:1.6rem;top:70%;right:8%;animation:floatItem 4.5s ease-in-out infinite 0.3s;opacity:.6">🎓</div>
+        <div style="position:absolute;font-size:1.4rem;top:25%;left:20%;animation:floatItem 6s ease-in-out infinite 0.8s;opacity:.4">🔤</div>
+        <div style="position:absolute;font-size:1.8rem;top:50%;right:20%;animation:floatItem 3s ease-in-out infinite 1.2s;opacity:.5">💡</div>
+        <div style="position:absolute;font-size:1.2rem;top:80%;left:30%;animation:floatItem 5.5s ease-in-out infinite 0.6s;opacity:.4">⭐</div>
+        <div style="position:absolute;font-size:1.5rem;top:5%;left:50%;animation:floatItem 4.2s ease-in-out infinite 0.9s;opacity:.4">🎵</div>
+    </div>
+    <div class="mascot-big" id="mascotBig" style="animation:float 2s ease-in-out infinite;position:relative;z-index:1">🦉</div>
+    <h1 class="welcome-title" style="animation:bounce 2s ease infinite;position:relative;z-index:1">SpellMaster Pro</h1>
+    <p class="welcome-sub" style="animation:fadeInUp 1s ease;position:relative;z-index:1">Learn to spell with fun! 🔤</p>
+    <p style="margin-bottom:6px;font-size:.85rem;opacity:.9;animation:fadeInUp 1.2s ease;position:relative;z-index:1">Choose your mascot:</p>
+    <div class="avatar-sel" style="animation:fadeInUp 1.4s ease;position:relative;z-index:1">
         <div class="av-opt sel" data-a="🦉" onclick="pickAv(this)">🦉</div>
         <div class="av-opt" data-a="🐱" onclick="pickAv(this)">🐱</div>
         <div class="av-opt" data-a="🐶" onclick="pickAv(this)">🐶</div>
@@ -383,12 +393,12 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div class="av-opt" data-a="🦊" onclick="pickAv(this)">🦊</div>
         <div class="av-opt" data-a="🐻" onclick="pickAv(this)">🐻</div>
     </div>
-    <input type="text" id="nameIn" class="nm-in" placeholder="What's your name?" maxlength="20" style="animation:fadeInUp 1.6s ease">
-    <label style="margin-bottom:12px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:6px;animation:fadeInUp 1.8s ease">
+    <input type="text" id="nameIn" class="nm-in" placeholder="What's your name?" maxlength="20" style="animation:fadeInUp 1.6s ease;position:relative;z-index:1">
+    <label style="margin-bottom:12px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:6px;animation:fadeInUp 1.8s ease;position:relative;z-index:1">
         <input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;cursor:pointer"> Remember me
     </label>
-    <button class="btn btn-p" onclick="startApp()" style="animation:fadeInUp 2s ease">Let's Go! 🚀</button>
-    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2.2s ease">From Galactos Group 💜</p>
+    <button class="btn btn-p" onclick="startApp()" style="animation:fadeInUp 2s ease;position:relative;z-index:1">Let's Go! 🚀</button>
+    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2.2s ease;position:relative;z-index:1">From Galactos Group 💜</p>
 </div>
 
 <!-- Dashboard -->
@@ -614,6 +624,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <div id="fetchStatus" style="font-size:.8rem;margin-top:6px;color:var(--ok)"></div>
             <div class="p-row" style="margin-top:6px"><span>Downloaded</span><span id="dlCount">0</span></div>
         </div>
+        <div class="p-stat"><h3>📅 Practice Calendar</h3>
+            <div class="cal-grid" id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:.75rem"></div>
+        </div>
         <div class="p-stat"><h3>📤 Export</h3><button class="btn btn-s btn-sm" onclick="exportProgress()">Download Report</button></div>
         <div class="p-stat"><h3>📊 Weekly Report</h3><button class="btn btn-s btn-sm" onclick="showWeeklyReport()">View Report</button></div>
         <div class="p-stat"><h3>🏆 Certificate</h3><p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Earn a certificate at 100+ words</p><button class="btn btn-p btn-sm" onclick="showCertificate()" id="certBtn" disabled>Generate Certificate</button></div>
@@ -708,7 +721,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 <!-- Admin Screen -->
 <div id="adminScreen" class="screen dash-screen hidden">
     <div class="hdr">
-        <button class="back-btn" onclick="showScr('dash')" style="color:#fff">←</button>
+        <button class="back-btn" onclick="closeKeyGen()" style="color:#fff">←</button>
         <div class="hdr-t">🔐 Admin Panel</div>
         <div></div>
     </div>
@@ -723,6 +736,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <h3 style="margin:0 0 12px;font-size:1rem">🔐 Enter Admin Password</h3>
             <input type="password" id="adminPassIn" class="nm-in" placeholder="Password..." onkeypress="if(event.key==='Enter')verifyAdmin()" style="width:100%;margin-bottom:10px">
             <button class="btn btn-p" style="width:100%" onclick="verifyAdmin()">Verify ✅</button>
+            <p id="adminLoginMsg" style="font-size:.8rem;margin-top:8px;min-height:18px;text-align:center"></p>
         </div>
 
         <div class="card hidden" id="adminKeyGen">
@@ -749,6 +763,60 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <h3 style="margin:0 0 8px;font-size:1rem">📊 Generated Keys</h3>
             <div id="keyHistory" style="font-size:.8rem;color:var(--txt2)">No keys generated yet</div>
         </div>
+
+        <div class="card hidden" style="margin-top:16px" id="adminSettingsCard">
+            <h3 style="margin:0 0 12px;font-size:1rem">⚙️ App Settings</h3>
+            <div class="sett-item"><span class="sett-lb">🔊 Sound</span><div class="tog on" id="adminSndTog" onclick="adminTogSnd()"></div></div>
+            <div class="sett-item"><span class="sett-lb">🌙 Dark Mode</span><div class="tog" id="adminDkTog" onclick="adminTogDk()"></div></div>
+            <div class="sett-item"><span class="sett-lb">💡 Hints</span><div class="tog" id="adminHntTog" onclick="adminTogHints()"></div></div>
+            <div class="sett-item"><span class="sett-lb">🎨 Theme</span>
+                <select id="adminThemeSel" onchange="adminSetTheme(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
+                    <option value="light">Default</option><option value="dark">Dark</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="sunset">Sunset</option><option value="candy">Candy</option><option value="midnight">Midnight</option>
+                </select>
+            </div>
+            <div class="sett-item"><span class="sett-lb">⏰ Time Limit</span>
+                <select id="adminTimeSel" onchange="adminSetTime(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
+                    <option value="0">No limit</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
+                </select>
+            </div>
+            <div class="sett-item"><span class="sett-lb">🌐 Language</span>
+                <select id="adminLangSel" onchange="adminSetLang(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
+                    <option value="en">English</option><option value="sw">Kiswahili</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+            <h3 style="margin:0 0 12px;font-size:1rem">🔐 Passwords & Security</h3>
+            <div style="margin-bottom:12px">
+                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Change Admin Password:</p>
+                <div style="font-size:.75rem;color:var(--txt2);margin-bottom:6px">Current: <strong id="curAdminPassStatus">Default (admin2024)</strong></div>
+                <input type="password" id="newAdminPassIn" class="nm-in" placeholder="New admin password" style="width:100%;margin-bottom:6px;font-size:.85rem">
+                <input type="password" id="confirmAdminPassIn" class="nm-in" placeholder="Confirm new password" style="width:100%;margin-bottom:6px;font-size:.85rem">
+                <button class="btn btn-s btn-sm" onclick="changeAdminPass()" style="width:100%">🔑 Change Admin Password</button>
+                <p id="passChangeMsg" style="font-size:.8rem;margin-top:6px;min-height:18px;text-align:center"></p>
+            </div>
+            <div style="margin-bottom:12px">
+                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Parent PIN (4 digits):</p>
+                <div style="font-size:.75rem;color:var(--txt2);margin-bottom:6px">Current: <strong id="curPinStatus">Haina PIN</strong></div>
+                <div style="display:flex;gap:6px">
+                    <input type="password" id="adminPinIn" class="nm-in" style="width:80px;font-size:1rem" placeholder="****" maxlength="4">
+                    <button class="btn btn-s btn-sm" onclick="adminSetPin()">Set PIN</button>
+                    <button class="btn btn-no btn-sm" onclick="clearParentPin()">Clear</button>
+                </div>
+                <p id="pinChangeMsg" style="font-size:.8rem;margin-top:6px;min-height:18px;text-align:center"></p>
+            </div>
+            <div>
+                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Device & License Info:</p>
+                <div style="font-size:.75rem;color:var(--txt2);background:var(--bg);padding:8px;border-radius:8px">
+                    <div>Device ID: <code id="deviceIdDisp">...</code></div>
+                    <div id="licenseStatusDisp"></div>
+                </div>
+            </div>
+            <div style="margin-top:12px">
+                <button class="btn btn-no btn-sm" onclick="adminReset()" style="width:100%">🗑️ Reset ALL Data</button>
+            </div>
+        </div>
     </div>
     <div style="height:65px"></div>
 </div>
@@ -762,22 +830,51 @@ const ADMIN_PASS=_0x7g8h(_0x3c4d);
 const ADMIN_SECRET=_0x7g8h(_0x5e6f);
 
 // ===== ADMIN FUNCTIONS (early definition) =====
-let generatedKeys=[];
+var generatedKeys=[];
 function openKeyGen(){
     document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
     document.getElementById('adminScreen').classList.remove('hidden');
-    document.getElementById('adminPassCard').classList.remove('hidden');
-    document.getElementById('adminKeyGen').classList.add('hidden');
-    document.getElementById('genKeyDisplay').classList.add('hidden');
-    if(document.getElementById('adminPassIn'))document.getElementById('adminPassIn').value='';
+    const pc=document.getElementById('adminPassCard');
+    const kg=document.getElementById('adminKeyGen');
+    const gd=document.getElementById('genKeyDisplay');
+    const sc=document.getElementById('adminSettingsCard');
+    if(pc)pc.classList.remove('hidden');
+    if(kg)kg.classList.add('hidden');
+    if(gd)gd.classList.add('hidden');
+    if(sc)sc.classList.add('hidden');
+    const pi=document.getElementById('adminPassIn');
+    if(pi)pi.value='';
+    const lm=document.getElementById('adminLoginMsg');
+    if(lm){lm.textContent='';lm.style.color=''}
     renderKeyHistory();
 }
-function closeKeyGen(){showScr('dash')}
+function closeKeyGen(){
+    const lic=checkLicense();
+    if(lic.valid){
+        const loaded=load();
+        if(loaded&&S.lastUser){initDash()}else{showScr('welcome')}
+    }else{
+        document.getElementById('adminScreen').classList.add('hidden');
+        document.getElementById('licenseScreen').classList.remove('hidden');
+    }
+}
 function verifyAdmin(){
     const pass=document.getElementById('adminPassIn').value;
-    if(pass!==ADMIN_PASS){alert('❌ Wrong password!');return;}
+    const msg=document.getElementById('adminLoginMsg');
+    const expected=getAdminPass();
+    if(pass!==expected){
+        msg.textContent='❌ Nywila si sahihi! (Umeingiza: '+pass.length+' herufi)';
+        msg.style.color='#ff6b6b';
+        document.getElementById('adminPassIn').value='';
+        document.getElementById('adminPassIn').focus();
+        return;
+    }
+    msg.textContent='✅ Nywila ni sahihi!';
+    msg.style.color='#4ECB71';
     document.getElementById('adminPassCard').classList.add('hidden');
     document.getElementById('adminKeyGen').classList.remove('hidden');
+    document.getElementById('adminSettingsCard').classList.remove('hidden');
+    loadAdminSettings();
 }
 function generateKeyBtn(){
     const days = parseInt(document.getElementById('keyDaysIn').value);
@@ -1033,8 +1130,22 @@ function pSnd(type){
 }
 function speak(text,rate){
     if(!rate)rate=S.sett.spd||.8;
-    if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;u.pitch=1.1;const b=document.getElementById('listenBtn');if(b)b.classList.add('playing');u.onend=()=>{if(b)b.classList.remove('playing')};speechSynthesis.speak(u)}
+    if('speechSynthesis' in window){
+        speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance(text);
+        u.lang='en-US';u.rate=rate;u.pitch=1.0;u.volume=1.0;
+        const voices=speechSynthesis.getVoices();
+        const preferred=['Microsoft Zira','Microsoft David','Google US English','Samantha','Alex','Google UK English Female','Karen','Daniel','Moira','Tessa'];
+        let chosen=null;
+        for(const p of preferred){const v=voices.find(v=>v.name.includes(p));if(v){chosen=v;break}}
+        if(!chosen)chosen=voices.find(v=>v.lang.startsWith('en')&&v.name.toLowerCase().includes('female'))||voices.find(v=>v.lang.startsWith('en'));
+        if(chosen)u.voice=chosen;
+        const b=document.getElementById('listenBtn');if(b)b.classList.add('playing');
+        u.onend=()=>{if(b)b.classList.remove('playing')};
+        speechSynthesis.speak(u);
+    }
 }
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{speechSynthesis.getVoices()}}
 
 // ===== STORAGE =====
 function save(){const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}
@@ -1042,7 +1153,7 @@ function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.p
 
 // ===== LICENSE ACTIVATION =====
 function activateBtn() {
-    const key = document.getElementById('licenseKeyIn').value.trim().toUpperCase();
+    const key = document.getElementById('licenseKeyIn').value.trim();
     const msg = document.getElementById('licenseMsg');
     
     if (!key) {
@@ -1372,13 +1483,61 @@ function showParentDash(){
 
 function exportProgress(){
     const acc=S.tAtt>0?Math.round(S.tCorr/S.tAtt*100):0;
-    const rpt=`SPELLMASTER PRO REPORT\n${'='.repeat(35)}\nStudent: ${S.name}\nDate: ${new Date().toLocaleDateString()}\n\nWords: ${S.wLearn}\nAccuracy: ${acc}%\nTime: ${S.pMin}min\nStreak: ${S.strk} days\nLevel: ${S.lvl}\nPoints: ${S.pts}\nTrophies: ${S.trophies.length}/${TROPHIES.length}`;
-    const blob=new Blob([rpt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`report_${S.name}_${new Date().toISOString().slice(0,10)}.txt`;a.click();pSnd('star')}
+    const h=Math.floor(S.pMin/60),m=S.pMin%60;
+    const timeStr=h>0?h+'h '+m+'m':m+'m';
+    const trophNames=S.trophies.map(t=>{const T=TROPHIES.find(x=>x.id===t);return T?'🏆 '+T.name:''}).filter(Boolean).join('<br>')||'None yet';
+    const lvlNames={1:'Beginner 🌱',2:'Explorer 🗺️',3:'Champion 🏆'};
+    const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const weekPts=S.weeklyPts||[0,0,0,0,0,0,0];
+    const weekHTML=dayNames.map((d,i)=>'<div style="text-align:center"><div style="font-size:.7rem;color:#666">'+d+'</div><div style="font-size:1.1rem;font-weight:bold;color:#B8860B">'+weekPts[i]+'</div></div>').join('');
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SpellMaster Pro Report</title>
+<style>@page{size:A4;margin:15mm}*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#fff;color:#333;padding:0}
+.report{max-width:600px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#FFD700,#FFA500);color:#333;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px}
+.header h1{font-size:1.8rem;margin-bottom:4px;color:#333}
+.header p{font-size:.9rem;color:#555}
+.badge{display:inline-block;background:#333;color:#FFD700;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:bold;margin-top:8px}
+.section{background:#FFFDF0;border:2px solid #FFD700;border-radius:12px;padding:16px;margin-bottom:16px}
+.section h2{font-size:1rem;color:#B8860B;margin-bottom:12px;border-bottom:2px dashed #FFD700;padding-bottom:6px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#FFFAE6;border-radius:10px;padding:12px;text-align:center;border:1px solid #FFE082}
+.stat .num{font-size:1.6rem;font-weight:800;color:#B8860B}
+.stat .lbl{font-size:.7rem;color:#888;margin-top:2px}
+.week-grid{display:flex;justify-content:space-around;margin:10px 0}
+.trophies{font-size:.85rem;line-height:1.8}
+.footer{text-align:center;padding:16px;font-size:.7rem;color:#999;border-top:2px solid #FFD700;margin-top:20px}
+.footer strong{color:#B8860B}
+@media print{body{background:#fff}.report{padding:0}}</style></head><body>
+<div class="report">
+<div class="header"><h1>📚 SpellMaster Pro</h1><p>Progress Report</p><div class="badge">From Galactos Group 💜</div></div>
+<div class="section"><h2>👤 Student: ${S.name}</h2>
+<div class="stats-grid">
+<div class="stat"><div class="num">${S.wLearn}</div><div class="lbl">Words Learned</div></div>
+<div class="stat"><div class="num">${acc}%</div><div class="lbl">Accuracy</div></div>
+<div class="stat"><div class="num">${timeStr}</div><div class="lbl">Practice Time</div></div>
+<div class="stat"><div class="num">${S.strk} days</div><div class="lbl">Best Streak</div></div>
+<div class="stat"><div class="num">${S.pts}</div><div class="lbl">Points</div></div>
+<div class="stat"><div class="num">${lvlNames[S.lvl]||'Level '+S.lvl}</div><div class="lbl">Current Level</div></div>
+<div class="stat"><div class="num">${S.tCorr}/${S.tAtt}</div><div class="lbl">Correct/Total</div></div>
+<div class="stat"><div class="num">${S.trophies.length}/${TROPHIES.length}</div><div class="lbl">Trophies</div></div>
+</div></div>
+<div class="section"><h2>📊 This Week</h2><div class="week-grid">${weekHTML}</div></div>
+<div class="section"><h2>🏆 Trophies</h2><div class="trophies">${trophNames}</div></div>
+<div class="section"><h2>📅 Calendar</h2><p style="font-size:.85rem;color:#666">Practice days recorded: <strong>${S.pracDays.length}</strong></p></div>
+<div class="footer"><p>Generated on <strong>${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</strong></p><p>SpellMaster Pro - From Galactos Group 💜</p></div>
+</div>
+<script>window.onload=function(){window.print()}<\/script></body></html>`;
+    const blob=new Blob([html],{type:'text/html'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.target='_blank';a.download='SpellMaster_Pro_Report_'+S.name+'.html';a.click();
+    pSnd('star');
+}
 
 // ===== SETTINGS =====
 function togSndSet(){S.sett.snd=!S.sett.snd;document.getElementById('sndTog').classList.toggle('on');save();if(S.sett.snd)pSnd('click')}
 function togSnd(){S.sett.snd=!S.sett.snd;document.getElementById('sndBtn').textContent=S.sett.snd?'🔊':'🔇';save()}
 function togTheme(){S.sett.dk=!S.sett.dk;applyTheme();save();pSnd('click')}
+function showSett(){if(localStorage.getItem('sm_pin')){showPinScreen('settings')}else{showScr('sett');updateLicenseInfo()}}
 function applyTheme(){document.body.setAttribute('data-theme',S.sett.dk?'dark':'light');document.getElementById('thmBtn').textContent=S.sett.dk?'☀️':'🌙';const dt=document.getElementById('dkTog');if(dt)dt.classList.toggle('on',S.sett.dk)}
 function togHintSet(){S.sett.hints=!S.sett.hints;document.getElementById('hntTog').classList.toggle('on');save()}
 function chgSpd(){S.sett.spd=parseFloat(document.getElementById('spSpd').value);save()}
@@ -1397,7 +1556,7 @@ function updateLicenseInfo(){
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
 
 // ===== NAVIGATION =====
-function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen',profile:'profileScreen',pin:'pinScreen',cert:'certScreen',report:'reportScreen',admin:'adminScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB();initTimeLimit()}if(sc==='admin'){document.getElementById('adminPassCard').classList.remove('hidden');document.getElementById('adminKeyGen').classList.add('hidden');document.getElementById('genKeyDisplay').classList.add('hidden');document.getElementById('adminPassIn').value='';renderKeyHistory()}}
+function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen',profile:'profileScreen',pin:'pinScreen',cert:'certScreen',report:'reportScreen',admin:'adminScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB();initTimeLimit()}if(sc==='admin'){document.getElementById('adminPassCard').classList.remove('hidden');document.getElementById('adminKeyGen').classList.add('hidden');document.getElementById('adminSettingsCard').classList.add('hidden');document.getElementById('genKeyDisplay').classList.add('hidden');document.getElementById('adminPassIn').value='';renderKeyHistory()}}
 function goBack(){clearInterval(S.tmrInt);showScr('dash');speechSynthesis.cancel()}
 
 // ===== CELEBRATIONS =====
@@ -1508,7 +1667,6 @@ function pinEnter(){
         else if(pinAction==='time')document.getElementById('timeLimitSel').disabled=false;
     }else{document.getElementById('pinMsg').textContent='❌ Wrong PIN';pinBuffer='';updatePinDots()}
 }
-function showParentDash(){const pin=localStorage.getItem('sm_pin');if(pin)showPinScreen('parent');else showParent()}
 function needsPinFor(action){return localStorage.getItem('sm_pin')?true:false}
 
 // ===== CERTIFICATE =====
@@ -1547,18 +1705,19 @@ function exportReport(){
 }
 
 // ===== NEW THEMES =====
-function setTheme(t){S.sett.theme=t;applyTheme();save()}
+function setTheme(t){S.sett.theme=t;if(t!=='dark'&&t!=='midnight')S.sett.dk=false;applyTheme();save()}
 const origApplyTheme=applyTheme;
 applyTheme=function(){
-    if(S.sett.theme&&S.sett.theme!=='dark'){document.body.setAttribute('data-theme',S.sett.theme)}
-    else{document.body.setAttribute('data-theme',S.sett.dk?'dark':'light')}
+    if(S.sett.dk){document.body.setAttribute('data-theme','dark')}
+    else if(S.sett.theme&&S.sett.theme!=='light'){document.body.setAttribute('data-theme',S.sett.theme)}
+    else{document.body.setAttribute('data-theme','light')}
     document.getElementById('thmBtn').textContent=(S.sett.dk||['dark','midnight'].includes(S.sett.theme))?'☀️':'🌙';
     const dt=document.getElementById('dkTog');if(dt)dt.classList.toggle('on',S.sett.dk);
     const ts=document.getElementById('themeSelect');if(ts)ts.value=S.sett.theme||'light';
 };
 
 // ===== MULTI-LANGUAGE =====
-const LANG={en:{listen:'Listen and type',sentence:'Complete the sentence',fill:'Fill in the blanks',match:'Match word with picture',quiz:'Choose the correct answer',flash:'Tap to flip',pronun:'Say the word',hint:'💡 Hint',check:'Check ✓',next:'Next →',correct:'Correct!',wrong:'Wrong!',words:'Words',accuracy:'Accuracy',time:'Practice Time',streak:'Streak',level:'Level',points:'Points'},sw:{listen:'Sikiliza na uandike',sentence:'Kamilisha sentensi',fill:'Jaza nafasi',match:'Linganisha neno na picha',quiz:'Chagua jibu sahihi',flash:'Gusa kugeuza',pronun:'Sema neno',hint:'💡 Kidokezo',check:'Angalia ✓',next:'Endelea →',correct:'Sahihi!',wrong:'Sio sahihi!',words:'Maneno',accuracy:'Usahihi',time:'Muda wa kufanya',streak:'Mfululizo',level:'Ngazi',points:'Alama'};
+const LANG={en:{listen:'Listen and type',sentence:'Complete the sentence',fill:'Fill in the blanks',match:'Match word with picture',quiz:'Choose the correct answer',flash:'Tap to flip',pronun:'Say the word',hint:'💡 Hint',check:'Check ✓',next:'Next →',correct:'Correct!',wrong:'Wrong!',words:'Words',accuracy:'Accuracy',time:'Practice Time',streak:'Streak',level:'Level',points:'Points'},sw:{listen:'Sikiliza na uandike',sentence:'Kamilisha sentensi',fill:'Jaza nafasi',match:'Linganisha neno na picha',quiz:'Chagua jibu sahihi',flash:'Gusa kugeuza',pronun:'Sema neno',hint:'💡 Kidokezo',check:'Angalia ✓',next:'Endelea →',correct:'Sahihi!',wrong:'Sio sahihi!',words:'Maneno',accuracy:'Usahihi',time:'Muda wa kufanya',streak:'Mfululizo',level:'Ngazi',points:'Alama'}};
 function setLang(l){S.sett.lang=l;save();updateLang()}
 function updateLang(){const l=LANG[S.sett.lang||'en']||LANG.en;document.getElementById('modeInst').textContent=l[S.mode]||l.listen}
 
@@ -1643,20 +1802,19 @@ function saveParentEmail(){
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
-    // License check disabled for now
-    // const lic=checkLicense();
-    // if(!lic.valid){
-    //     document.getElementById('welcomeScreen').classList.add('hidden');
-    //     document.getElementById('licenseScreen').classList.remove('hidden');
-    //     if(lic.reason==='expired'){
-    //         document.getElementById('licenseMsg').style.color='var(--sec)';
-    //         document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
-    //     } else if(lic.reason==='device_mismatch'){
-    //         document.getElementById('licenseMsg').style.color='var(--sec)';
-    //         document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
-    //     }
-    //     return;
-    // }
+    const lic=checkLicense();
+    if(!lic.valid){
+        document.getElementById('welcomeScreen').classList.add('hidden');
+        document.getElementById('licenseScreen').classList.remove('hidden');
+        if(lic.reason==='expired'){
+            document.getElementById('licenseMsg').style.color='var(--sec)';
+            document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
+        } else if(lic.reason==='device_mismatch'){
+            document.getElementById('licenseMsg').style.color='var(--sec)';
+            document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
+        }
+        return;
+    }
     const loaded=load();
     initTimeLimit();
     if(loaded&&S.rememberMe&&S.lastUser){
@@ -1679,7 +1837,71 @@ document.addEventListener('DOMContentLoaded',()=>{
                 newWorker.addEventListener('statechange',()=>{
                     if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
                         if(confirm('🔄 New version available! Update now?')){newWorker.postMessage('skipWaiting');location.reload()}
-                    }
+}
+
+// ===== ADMIN SETTINGS =====
+function adminTogSnd(){S.sett.snd=!S.sett.snd;document.getElementById('adminSndTog').classList.toggle('on',S.sett.snd);save()}
+function adminTogDk(){S.sett.dk=!S.sett.dk;document.getElementById('adminDkTog').classList.toggle('on',S.sett.dk);applyTheme();save()}
+function adminTogHints(){S.sett.hints=!S.sett.hints;document.getElementById('adminHntTog').classList.toggle('on',S.sett.hints);save()}
+function adminSetTheme(t){S.sett.theme=t;if(t!=='dark'&&t!=='midnight')S.sett.dk=false;applyTheme();save()}
+function adminSetTime(v){localStorage.setItem('sm_timeLimit',v);initTimeLimit()}
+function adminSetLang(l){S.sett.lang=l;save();updateLang()}
+function adminSetPin(){
+    const msg=document.getElementById('pinChangeMsg');
+    const pin=document.getElementById('adminPinIn').value.trim();
+    if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){msg.textContent='⚠️ Weka nambari 4 tu!';msg.style.color='#ff6b6b';return}
+    localStorage.setItem('sm_pin',pin);
+    document.getElementById('adminPinIn').value='';
+    document.getElementById('curPinStatus').textContent='Imewekwa';
+    msg.textContent='✅ PIN imepangwa! Itatumika kufungua settings/parent.';
+    msg.style.color='#4ECB71';
+}
+function clearParentPin(){
+    const msg=document.getElementById('pinChangeMsg');
+    if(!localStorage.getItem('sm_pin')){msg.textContent='⚠️ Hakuna PIN ya kufuta';msg.style.color='#ff6b6b';return}
+    localStorage.removeItem('sm_pin');
+    document.getElementById('curPinStatus').textContent='Haina PIN';
+    msg.textContent='✅ PIN imefutwa!';
+    msg.style.color='#4ECB71';
+}
+function changeAdminPass(){
+    const msg=document.getElementById('passChangeMsg');
+    const newPass=document.getElementById('newAdminPassIn').value.trim();
+    const conf=document.getElementById('confirmAdminPassIn').value.trim();
+    if(!newPass||newPass.length<4){msg.textContent='⚠️ Password lazima iwe na herufi 4 au zaidi';msg.style.color='#ff6b6b';return}
+    if(newPass!==conf){msg.textContent='⚠️ Password hazifanani!';msg.style.color='#ff6b6b';return}
+    localStorage.setItem('sm_adminPass',btoa(newPass));
+    document.getElementById('newAdminPassIn').value='';
+    document.getElementById('confirmAdminPassIn').value='';
+    document.getElementById('curAdminPassStatus').textContent='Custom (imebadilishwa)';
+    msg.textContent='✅ Password imebadilishwa! Itatumika ujao.';
+    msg.style.color='#4ECB71';
+}
+function adminReset(){if(confirm('⚠️ Reset ALL data? This cannot be undone!')){localStorage.clear();location.reload()}}
+function getAdminPass(){
+    const saved=localStorage.getItem('sm_adminPass');
+    return saved?atob(saved):ADMIN_PASS;
+}
+function loadAdminSettings(){
+    document.getElementById('adminSndTog').classList.toggle('on',S.sett.snd);
+    document.getElementById('adminDkTog').classList.toggle('on',S.sett.dk);
+    document.getElementById('adminHntTog').classList.toggle('on',S.sett.hints);
+    if(document.getElementById('adminThemeSel'))document.getElementById('adminThemeSel').value=S.sett.theme||'light';
+    if(document.getElementById('adminLangSel'))document.getElementById('adminLangSel').value=S.sett.lang||'en';
+    const tl=localStorage.getItem('sm_timeLimit')||'0';
+    if(document.getElementById('adminTimeSel'))document.getElementById('adminTimeSel').value=tl;
+    const devEl=document.getElementById('deviceIdDisp');
+    if(devEl)devEl.textContent=getDeviceFingerprint();
+    const licEl=document.getElementById('licenseStatusDisp');
+    if(licEl){const lic=checkLicense();licEl.innerHTML=lic.valid?'<div style="color:var(--ok)">✅ License active ('+lic.daysLeft+' days left)</div>':'<div style="color:var(--sec)">❌ '+lic.reason+'</div>'}
+    const passSt=document.getElementById('curAdminPassStatus');
+    if(passSt){passSt.textContent=localStorage.getItem('sm_adminPass')?'Custom (imebadilishwa)':'Default (admin2024)'}
+    const passMsg=document.getElementById('passChangeMsg');if(passMsg)passMsg.textContent='';
+    const pinSt=document.getElementById('curPinStatus');
+    if(pinSt){pinSt.textContent=localStorage.getItem('sm_pin')?'Imewekwa':'Haina PIN'}
+    const pinMsg=document.getElementById('pinChangeMsg');if(pinMsg)pinMsg.textContent='';
+}
+
                 });
             });
         }).catch(()=>{});
