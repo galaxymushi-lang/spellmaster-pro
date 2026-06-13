@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Interactive spelling app for kids">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--pri:#6C63FF;--sec:#FF6B6B;--ok:#4ECB71;--warn:#FFD93D;--bg:#F0F4FF;--card:#FFF;--txt:#2D3436;--txt2:#636E72;--brd:#e0e0e0}
@@ -837,6 +839,41 @@ function _0x7g8h(s){return atob(s)}
 const ADMIN_PASS=_0x7g8h(_0x3c4d);
 const ADMIN_SECRET=_0x7g8h(_0x5e6f);
 
+// ===== FIREBASE CONFIG =====
+// REPLACE with your Firebase config from https://console.firebase.google.com
+const FB_CONFIG={apiKey:"YOUR_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",projectId:"YOUR_PROJECT",storageBucket:"YOUR_PROJECT.appspot.com",messagingSenderId:"YOUR_SENDER_ID",appId:"YOUR_APP_ID"};
+let fbDb=null;
+function initFirebase(){
+    try{
+        if(FB_CONFIG.apiKey&&FB_CONFIG.apiKey!=='YOUR_API_KEY'){
+            firebase.initializeApp(FB_CONFIG);
+            fbDb=firebase.firestore();
+            console.log('Firebase connected');
+        }
+    }catch(e){console.warn('Firebase init failed:',e.message)}
+}
+function syncToFirebase(){
+    if(!fbDb||!S.name)return;
+    const uid=S.name.toLowerCase().replace(/[^a-z0-9]/g,'_');
+    fbDb.collection('users').doc(uid).set({
+        name:S.name,avatar:S.avatar,pts:S.pts,lvl:S.lvl,
+        wLearn:S.wLearn,tCorr:S.tCorr,tAtt:S.tAtt,
+        strk:S.strk,pMin:S.pMin,
+        trophies:S.trophies.length,
+        lastSeen:new Date().toISOString(),
+        device:getDeviceFingerprint()
+    },{merge:true}).catch(e=>console.warn('Firebase sync failed:',e.message));
+}
+function loadFromFirebase(){
+    if(!fbDb)return;
+    fbDb.collection('users').orderBy('lastSeen','desc').limit(50).get()
+    .then(snap=>{
+        const users=[];
+        snap.forEach(doc=>users.push(doc.data()));
+        localStorage.setItem('sm_fb_users',JSON.stringify(users));
+    }).catch(e=>console.warn('Firebase load failed:',e.message));
+}
+
 // ===== ADMIN FUNCTIONS (early definition) =====
 var generatedKeys=[];
 function openKeyGen(){
@@ -1156,7 +1193,7 @@ function speak(text,rate){
 if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{speechSynthesis.getVoices()}}
 
 // ===== STORAGE =====
-function save(){try{const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}catch(e){console.warn('Storage full:',e.message)}}
+function save(){try{const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d));if(fbDb&&S.name)syncToFirebase()}catch(e){console.warn('Storage full:',e.message)}}
 function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.parse(v));return true}return false}
 
 // ===== LICENSE ACTIVATION =====
@@ -1844,6 +1881,7 @@ function saveParentEmail(){
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
+    initFirebase();
     const lic=checkLicense();
     if(!lic.valid){
         document.getElementById('welcomeScreen').classList.add('hidden');

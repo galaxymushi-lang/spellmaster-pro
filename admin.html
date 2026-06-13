@@ -4,6 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SpellMaster Pro - Admin Panel</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+// ===== FIREBASE USERS =====
+let fbDb=null;
+function connectFirebase(){
+    const apiKey=document.getElementById("fbApiKey").value.trim();
+    const projectId=document.getElementById("fbProject").value.trim();
+    if(!apiKey||!projectId){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>⚠️ Weka API Key na Project ID</span>";return}
+    try{
+        firebase.initializeApp({apiKey:apiKey,projectId:projectId,storageBucket:projectId+".appspot.com"});
+        fbDb=firebase.firestore();
+        document.getElementById("fbStatus").innerHTML="<span style=color:var(--ok)>✅ Connected!</span>";
+        localStorage.setItem("sm_fb_config",JSON.stringify({apiKey,projectId}));
+        loadUsers();
+    }catch(e){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>❌ "+e.message+"</span>"}
+}
+function loadUsers(){
+    if(!fbDb){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>⚠️ Connect Firebase kwanza</span>";return}
+    document.getElementById("usersList").innerHTML="🔄 Loading...";
+    fbDb.collection("users").orderBy("lastSeen","desc").limit(50).get()
+    .then(snap=>{
+        if(snap.empty){document.getElementById("usersList").innerHTML="<p>Hakuna users bado</p>";return}
+        let html="";
+        snap.forEach(doc=>{
+            const u=doc.data();
+            const last=u.lastSeen?new Date(u.lastSeen).toLocaleString():"N/A";
+            const acc=u.tAtt>0?Math.round(u.tCorr/u.tAtt*100)+"%":"0%";
+            html+='<div style="background:var(--bg);padding:12px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:10px">';
+            html+='<div style="font-size:1.5rem">'+(u.avatar||"🦉")+'</div>';
+            html+='<div style="flex:1"><div style="font-weight:600">'+u.name+"</div>";
+            html+='<div style="font-size:.7rem;color:var(--txt2)">⭐'+(u.pts||0)+" pts | 📝"+(u.wLearn||0)+" words | 🎯"+acc+"</div>";
+            html+='<div style="font-size:.7rem;color:var(--txt2)">🔥'+(u.strk||0)+" streak | ⏱️"+(u.pMin||0)+"m | 🏆"+(u.trophies||0)+" trophies</div>";
+            html+='<div style="font-size:.65rem;color:var(--txt2)">Last: '+last+"</div>";
+            html+="</div></div>";
+        });
+        document.getElementById("usersList").innerHTML=html;
+    })
+    .catch(e=>{document.getElementById("usersList").innerHTML="<span style=color:var(--sec)>❌ "+e.message+"</span>"});
+}
+// Auto-load saved config
+(function(){
+    const saved=localStorage.getItem("sm_fb_config");
+    if(saved){
+        try{const c=JSON.parse(saved);document.getElementById("fbApiKey").value=c.apiKey||"";document.getElementById("fbProject").value=c.projectId||""}catch(e){}
+    }
+})();
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--pri:#6C63FF;--sec:#FF6B6B;--ok:#4ECB71;--warn:#FFD93D;--bg:#F0F4FF;--card:#FFF;--txt:#2D3436;--txt2:#636E72;--brd:#e0e0e0}
@@ -115,6 +162,7 @@ textarea.inp{resize:vertical;min-height:60px;font-family:inherit}
         <div class="tab" onclick="showTab('gen')">➕ Generate</div>
         <div class="tab" onclick="showTab('settings')">⚙️ Settings</div>
         <div class="tab" onclick="showTab('reports')">📊 Reports</div>
+        <div class="tab" onclick="showTab('users')">👶 Users</div>
     </div>
 
     <!-- KEYS TAB -->
