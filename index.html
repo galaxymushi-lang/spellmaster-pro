@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SpellMaster Pro</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6C63FF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Interactive spelling app for kids">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--pri:#6C63FF;--sec:#FF6B6B;--ok:#4ECB71;--warn:#FFD93D;--bg:#F0F4FF;--card:#FFF;--txt:#2D3436;--txt2:#636E72;--brd:#e0e0e0}
@@ -198,9 +203,63 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 @keyframes slideDown{from{transform:translateX(-50%) translateY(-20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 
 @media(max-width:600px){.lvl-cards,.mode-grid{grid-template-columns:repeat(2,1fr)}.dg{padding:8px}.card{padding:14px}.quiz-options{grid-template-columns:1fr}}
+
+/* Profiles */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;width:min(90%,400px);margin:14px 0}
+.profile-card{background:var(--card);border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:3px solid transparent;transition:.3s;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+.profile-card:hover{border-color:var(--pri);transform:translateY(-2px)}
+.profile-card.active{border-color:var(--ok);background:#e8f5e9}
+.profile-av{font-size:2.5rem;margin-bottom:6px}.profile-name{font-weight:700;font-size:.9rem}.profile-pts{font-size:.75rem;color:var(--txt2)}
+.add-profile{border:2px dashed var(--brd);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px}
+.add-profile:hover{border-color:var(--pri)}
+
+/* Time Limit */
+.time-limit-bar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--ok);z-index:200;transition:width .3s}
+.time-limit-bar.warning{background:var(--warn)}
+.time-limit-bar.danger{background:var(--sec)}
+.time-limit-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border-radius:20px;padding:30px;text-align:center;z-index:300;box-shadow:0 10px 40px rgba(0,0,0,.3);max-width:340px;width:90%}
+.time-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:299}
+
+/* Certificate */
+.cert-screen{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;text-align:center;justify-content:center;padding:20px}
+.certificate{background:#fff;color:#333;border-radius:16px;padding:40px 30px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3);border:3px solid #c9a227}
+.cert-border{border:2px solid #c9a227;border-radius:12px;padding:20px}
+.cert-title{font-size:1.8rem;font-weight:800;color:#c9a227;margin-bottom:4px}
+.cert-subtitle{font-size:.9rem;color:#666;margin-bottom:16px}
+.cert-name{font-size:2rem;font-weight:800;color:#333;font-family:Georgia,serif;margin:10px 0}
+.cert-word{font-size:1.2rem;color:#666;margin:8px 0}
+.cert-date{font-size:.85rem;color:#999;margin-top:16px}
+.cert-seal{font-size:4rem;margin-top:10px}
+
+/* PIN */
+.pin-display{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.pin-dot{width:16px;height:16px;border-radius:50%;background:var(--brd);transition:.3s}
+.pin-dot.filled{background:var(--pri)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:240px;margin:0 auto}
+.pin-key{width:60px;height:60px;border-radius:12px;border:2px solid var(--brd);background:var(--card);font-size:1.4rem;font-weight:700;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center}
+.pin-key:hover{background:var(--pri);color:#fff;border-color:var(--pri)}
+.pin-key.del{font-size:1rem;color:var(--sec)}
+
+/* Weekly Report */
+.report-card{background:var(--card);border-radius:16px;padding:20px;margin:10px 0;width:min(90%,460px)}
+.report-title{font-size:1.1rem;font-weight:700;color:var(--pri);margin-bottom:12px}
+.report-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);font-size:.9rem}
+.report-row:last-child{border-bottom:none}
+.report-highlight{background:linear-gradient(135deg,var(--pri),#764ba2);color:#fff;border-radius:12px;padding:16px;margin:10px 0;text-align:center}
+
+/* Extra Themes */
+[data-theme="ocean"]{--pri:#0077B6;--sec:#E63946;--ok:#06D6A0;--warn:#FFD166;--bg:#CAF0F8;--card:#FFF;--txt:#023E8A;--txt2:#0096C7;--brd:#90E0EF}
+[data-theme="forest"]{--pri:#2D6A4F;--sec:#E76F51;--ok:#52B788;--warn:#F4A261;--bg:#D8F3DC;--card:#FFF;--txt:#1B4332;--txt2:#40916C;--brd:#B7E4C7}
+[data-theme="sunset"]{--pri:#E63946;--sec:#457B9D;--ok:#F4A261;--warn:#E9C46A;--bg:#FFF1E6;--card:#FFF;--txt:#264653;--txt2:#2A9D8F;--brd:#E9C46A}
+[data-theme="candy"]{--pri:#FF69B4;--sec:#8B5CF6;--ok:#06D6A0;--warn:#FFD93D;--bg:#FFF0F5;--card:#FFF;--txt:#333;--txt2:#999;--brd:#FFB6C1}
+[data-theme="midnight"]{--pri:#7C3AED;--sec:#EF4444;--ok:#10B981;--warn:#F59E0B;--bg:#0F172A;--card:#1E293B;--txt:#F1F5F9;--txt2:#94A3B8;--brd:#334155}
+
+/* Print Certificate */
+@media print{body *{visibility:hidden}.certificate,.certificate *{visibility:visible}.certificate{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%)}}
 </style>
 </head>
 <body>
+<div class="time-limit-bar hidden" id="timeBar"></div>
 
 <!-- License Key Screen -->
 <div id="licenseScreen" class="screen welcome-screen">
@@ -213,6 +272,99 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <p style="margin-top:15px;font-size:.75rem;opacity:.7">Get your key from the app administrator</p>
     <p style="margin-top:8px;font-size:.7rem;opacity:.5">Need a key? Contact: your-email@gmail.com</p>
     <button style="margin-top:12px;background:none;border:none;color:var(--txt2);font-size:.75rem;cursor:pointer" onclick="openKeyGen()">⚙️ Admin</button>
+</div>
+
+<!-- Profile Selection -->
+<div id="profileScreen" class="screen welcome-screen hidden">
+    <div class="mascot-big">👨‍👩‍👧‍👦</div>
+    <h1 class="welcome-title">SpellMaster Pro</h1>
+    <p class="welcome-sub">Choose a profile or add new</p>
+    <div class="profile-grid" id="profileGrid"></div>
+</div>
+
+<!-- PIN Screen -->
+<div id="pinScreen" class="screen welcome-screen hidden" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+    <div class="mascot-big">🔐</div>
+    <h1 class="welcome-title" style="color:#fff">Parent PIN</h1>
+    <p class="welcome-sub" style="color:#fff;opacity:.8">Enter 4-digit PIN</p>
+    <div class="pin-display" id="pinDisplay">
+        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="pin-pad">
+        <button class="pin-key" onclick="pinKey(1)">1</button>
+        <button class="pin-key" onclick="pinKey(2)">2</button>
+        <button class="pin-key" onclick="pinKey(3)">3</button>
+        <button class="pin-key" onclick="pinKey(4)">4</button>
+        <button class="pin-key" onclick="pinKey(5)">5</button>
+        <button class="pin-key" onclick="pinKey(6)">6</button>
+        <button class="pin-key" onclick="pinKey(7)">7</button>
+        <button class="pin-key" onclick="pinKey(8)">8</button>
+        <button class="pin-key" onclick="pinKey(9)">9</button>
+        <button class="pin-key del" onclick="pinDel()">⌫</button>
+        <button class="pin-key" onclick="pinKey(0)">0</button>
+        <button class="pin-key" style="background:var(--ok);color:#fff;border-color:var(--ok)" onclick="pinEnter()">✓</button>
+    </div>
+    <p id="pinMsg" style="color:var(--sec);font-size:.85rem;margin-top:14px;min-height:20px"></p>
+    <button style="margin-top:12px;background:none;border:none;color:#fff;opacity:.6;font-size:.8rem;cursor:pointer" onclick="showScr('welcome')">← Back</button>
+</div>
+
+<!-- Certificate Screen -->
+<div id="certScreen" class="screen cert-screen hidden">
+    <div class="certificate" id="certContent">
+        <div class="cert-border">
+            <div class="cert-seal">🏆</div>
+            <div class="cert-title">Certificate of Achievement</div>
+            <div class="cert-subtitle">SpellMaster Pro</div>
+            <p style="margin:12px 0;font-size:.9rem;color:#666">This certifies that</p>
+            <div class="cert-name" id="certName">Student Name</div>
+            <p style="font-size:.9rem;color:#666;margin:8px 0">has successfully mastered</p>
+            <div class="cert-word" id="certWords">100 words</div>
+            <p style="font-size:.9rem;color:#666">with outstanding spelling skills!</p>
+            <div class="cert-date" id="certDate"></div>
+            <div style="margin-top:12px;font-size:1.2rem;color:#c9a227">⭐ ⭐ ⭐</div>
+        </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px">
+        <button class="btn btn-p" onclick="printCert()">🖨️ Print</button>
+        <button class="btn btn-ok" onclick="showScr('dash')">🏠 Home</button>
+    </div>
+</div>
+
+<!-- Time Limit Popup -->
+<div class="time-overlay hidden" id="timeOverlay">
+    <div class="time-limit-popup">
+        <div style="font-size:3rem;margin-bottom:10px">⏰</div>
+        <h2 style="margin:0 0 8px">Time's Up!</h2>
+        <p style="color:var(--txt2);font-size:.9rem" id="timeLimitMsg">You've reached your daily time limit.</p>
+        <p style="font-size:.8rem;color:var(--txt2);margin-top:8px">Ask your parent to extend your time.</p>
+        <button class="btn btn-p" style="margin-top:14px" onclick="closeTimeLimit()">OK</button>
+    </div>
+</div>
+
+<!-- Weekly Report Screen -->
+<div id="reportScreen" class="screen dash-screen hidden">
+    <div class="hdr"><button class="back-btn" onclick="showScr('parent')" style="color:#fff">←</button><div class="hdr-t">📊 Weekly Report</div><div></div></div>
+    <div style="padding:14px;width:100%;max-width:500px">
+        <div class="report-highlight">
+            <div style="font-size:2rem;font-weight:800" id="rptScore">0%</div>
+            <div style="font-size:.9rem;opacity:.9">Weekly Accuracy</div>
+        </div>
+        <div class="report-card">
+            <div class="report-title">📈 This Week's Stats</div>
+            <div class="report-row"><span>Words Practiced</span><span id="rptWords">0</span></div>
+            <div class="report-row"><span>Correct Answers</span><span id="rptCorrect">0</span></div>
+            <div class="report-row"><span>Accuracy</span><span id="rptAcc">0%</span></div>
+            <div class="report-row"><span>Practice Time</span><span id="rptTime">0m</span></div>
+            <div class="report-row"><span>Best Streak</span><span id="rptStreak">0</span></div>
+            <div class="report-row"><span>Points Earned</span><span id="rptPts">0</span></div>
+        </div>
+        <div class="report-card">
+            <div class="report-title">📊 Daily Breakdown</div>
+            <div id="rptDaily"></div>
+        </div>
+        <button class="btn btn-s" style="width:100%;margin-top:10px" onclick="exportReport()">📤 Export Report</button>
+    </div>
+    <div style="height:65px"></div>
 </div>
 
 <div id="welcomeScreen" class="screen welcome-screen hidden">
@@ -458,6 +610,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <div class="p-row" style="margin-top:6px"><span>Downloaded</span><span id="dlCount">0</span></div>
         </div>
         <div class="p-stat"><h3>📤 Export</h3><button class="btn btn-s btn-sm" onclick="exportProgress()">Download Report</button></div>
+        <div class="p-stat"><h3>📊 Weekly Report</h3><button class="btn btn-s btn-sm" onclick="showWeeklyReport()">View Report</button></div>
+        <div class="p-stat"><h3>🏆 Certificate</h3><p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Earn a certificate at 100+ words</p><button class="btn btn-p btn-sm" onclick="showCertificate()" id="certBtn" disabled>Generate Certificate</button></div>
+        <div class="p-stat"><h3>📥 Backup & Restore</h3><div style="display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="backupData()">📤 Backup</button><button class="btn btn-ok btn-sm" onclick="restoreData()">📥 Restore</button></div></div>
     </div>
     <div style="height:65px"></div>
 </div>
@@ -476,6 +631,30 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <div class="snd-card" onclick="setSndTheme('chiptune',this)"><div class="snd-ic">🎮</div><div class="snd-nm">Chiptune</div></div>
             <div class="snd-card" onclick="setSndTheme('soft',this)"><div class="snd-ic">🌿</div><div class="snd-nm">Soft</div></div>
         </div>
+        <div class="sett-item"><span class="sett-lb">🎨 Theme</span>
+            <select id="themeSelect" onchange="setTheme(this.value)">
+                <option value="light">Default</option><option value="dark">Dark</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="sunset">Sunset</option><option value="candy">Candy</option><option value="midnight">Midnight</option>
+            </select>
+        </div>
+        <div class="sett-item"><span class="sett-lb">🌐 Language</span>
+            <select id="langSelect" onchange="setLang(this.value)">
+                <option value="en">English</option><option value="sw">Kiswahili</option>
+            </select>
+        </div>
+        <div class="sett-item"><span class="sett-lb">⏰ Daily Time Limit</span>
+            <select id="timeLimitSel" onchange="setTimeLimit(this.value)">
+                <option value="0">No limit</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
+            </select>
+        </div>
+        <div class="sett-item"><span class="sett-lb">🔐 Parent PIN</span>
+            <div style="display:flex;gap:6px">
+                <input type="password" id="pinInput" class="nm-in" style="width:80px;font-size:1rem" placeholder="****" maxlength="4">
+                <button class="btn btn-s btn-sm" onclick="setParentPIN()">Set</button>
+            </div>
+        </div>
+        <div class="sett-item"><span class="sett-lb">👨‍👩‍👧 Profiles</span><button class="btn btn-s btn-sm" onclick="showProfiles()">Manage</button></div>
+        <div class="sett-item"><span class="sett-lb">📤 Backup Data</span><button class="btn btn-s btn-sm" onclick="backupData()">Backup</button></div>
+        <div class="sett-item"><span class="sett-lb">📥 Restore Data</span><button class="btn btn-s btn-sm" onclick="restoreData()">Restore</button></div>
         <div class="sett-item"><span class="sett-lb">👤 Switch User</span><button class="btn btn-s btn-sm" onclick="switchUser()">Switch</button></div>
         <div class="sett-item" style="flex-direction:column;align-items:flex-start;gap:5px;border-top:1px solid var(--border);padding-top:15px;margin-top:10px">
             <span class="sett-lb">🔑 License Info</span>
@@ -659,7 +838,7 @@ function copyKey(el){
 // ===== STATE =====
 const S={name:'',avatar:'🦉',pts:0,lvl:1,mode:'listen',cat:'all',strk:0,lastDt:null,
 wLearn:0,tCorr:0,tAtt:0,pMin:0,lProg:{1:0,2:0,3:0},unLvl:[1],pracDays:[],trophies:[],
-sett:{snd:true,dk:false,hints:false,spd:.8,sndTheme:'classic'},
+sett:{snd:true,dk:false,hints:false,spd:.8,sndTheme:'classic',theme:'light',lang:'en'},
 dWords:[],dDate:null,cWord:null,cDef:null,cSw:null,
 wList:[],wIdx:0,sCorr:0,sIncor:0,sPts:0,isDaily:false,
 mPairs:[],mSel:[],mDone:0,fSlots:[],tmrInt:null,tmrSec:60,
@@ -1108,7 +1287,8 @@ async function fetchWords(level){
     }catch(err){status.textContent='❌ Error';status.style.color='var(--sec)'}}
 
 // ===== PARENT DASHBOARD =====
-function showParent(){
+function showParent(){if(localStorage.getItem('sm_pin')){showPinScreen('parent')}else{showParentDash()}}
+function showParentDash(){
     document.getElementById('pWords').textContent=S.wLearn;const a=S.tAtt>0?Math.round(S.tCorr/S.tAtt*100):0;
     document.getElementById('pAcc').textContent=a+'%';const h=Math.floor(S.pMin/60),m=S.pMin%60;
     document.getElementById('pTime2').textContent=h>0?`${h}h${m}m`:`${m}m`;document.getElementById('pStreak').textContent=S.strk+' days';
@@ -1143,7 +1323,7 @@ function updateLicenseInfo(){
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
 
 // ===== NAVIGATION =====
-function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB()}}
+function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen',profile:'profileScreen',pin:'pinScreen',cert:'certScreen',report:'reportScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB();initTimeLimit()}}
 function goBack(){clearInterval(S.tmrInt);showScr('dash');speechSynthesis.cancel()}
 
 // ===== CELEBRATIONS =====
@@ -1159,6 +1339,183 @@ for(let d=1;d<=days;d++){const c=document.createElement('div');c.className='cal-
 
 // ===== KEYBOARD =====
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){const ps=document.getElementById('pracScreen');if(!ps.classList.contains('hidden')){if(!document.getElementById('subBtn').classList.contains('hidden'))checkW();else if(!document.getElementById('nxtBtn').classList.contains('hidden'))nextW();else if(!document.getElementById('fNxt').classList.contains('hidden')){S.wIdx++;loadFill()}}}});
+
+// ===== MULTIPLE PROFILES =====
+function getProfiles(){return JSON.parse(localStorage.getItem('sm_profiles')||'[]')}
+function saveProfiles(p){localStorage.setItem('sm_profiles',JSON.stringify(p))}
+function showProfiles(){
+    const profiles=getProfiles();
+    const g=document.getElementById('profileGrid');g.innerHTML='';
+    profiles.forEach(p=>{
+        const d=document.createElement('div');d.className='profile-card';
+        d.innerHTML=`<div class="profile-av">${p.avatar||'🦉'}</div><div class="profile-name">${p.name}</div><div class="profile-pts">⭐${p.pts||0} pts</div>`;
+        d.onclick=()=>switchToProfile(p.name);
+        g.appendChild(d);
+    });
+    const add=document.createElement('div');add.className='profile-card add-profile';
+    add.innerHTML='<div style="font-size:2rem">➕</div><div style="font-size:.8rem;color:var(--txt2)">Add New</div>';
+    add.onclick=()=>{showScr('welcome')};
+    g.appendChild(add);
+    showScr('profile');
+}
+function switchToProfile(name){
+    const profiles=getProfiles();
+    const p=profiles.find(x=>x.name===name);
+    if(p){
+        Object.assign(S,p.data||{});S.name=p.name;S.avatar=p.avatar;
+        localStorage.setItem('smp',JSON.stringify(S));
+        initDash();
+    }
+}
+function saveCurrentProfile(){
+    if(!S.name)return;
+    const profiles=getProfiles();
+    const idx=profiles.findIndex(x=>x.name===S.name);
+    const data={...S};delete data.wList;delete data.mPairs;delete data.fSlots;
+    if(idx>=0){profiles[idx].data=data;profiles[idx].pts=S.pts;profiles[idx].avatar=S.avatar}
+    else profiles.push({name:S.name,avatar:S.avatar,pts:S.pts,data});
+    saveProfiles(profiles);
+}
+
+// ===== TIME LIMITS =====
+let timeUsed=0;let timeLimit=0;let timeInterval=null;
+function initTimeLimit(){
+    timeLimit=parseInt(localStorage.getItem('sm_timeLimit')||'0');
+    const today=new Date().toDateString();
+    const td=JSON.parse(localStorage.getItem('sm_timeData')||'{}');
+    if(td.date===today){timeUsed=td.used||0}else{timeUsed=0;localStorage.setItem('sm_timeData',JSON.stringify({date:today,used:0}))}
+    if(timeLimit>0)startTimeTracking();
+}
+function startTimeTracking(){
+    clearInterval(timeInterval);
+    timeInterval=setInterval(()=>{
+        timeUsed++;
+        localStorage.setItem('sm_timeData',JSON.stringify({date:new Date().toDateString(),used:timeUsed}));
+        const pct=timeLimit>0?(timeUsed/timeLimit*100):0;
+        const bar=document.getElementById('timeBar');
+        if(pct<70){bar.className='time-limit-bar'}
+        else if(pct<90){bar.className='time-limit-bar warning'}
+        else{bar.className='time-limit-bar danger'}
+        bar.style.width=Math.min(100,pct)+'%';
+        bar.classList.remove('hidden');
+        if(timeUsed>=timeLimit){showTimeLimit()}
+    },60000);
+}
+function showTimeLimit(){
+    clearInterval(timeInterval);
+    document.getElementById('timeOverlay').classList.remove('hidden');
+    document.getElementById('timeLimitMsg').textContent=`You've used ${timeLimit} minutes today.`;
+}
+function closeTimeLimit(){document.getElementById('timeOverlay').classList.add('hidden');showScr('dash')}
+function setTimeLimit(val){timeLimit=parseInt(val);localStorage.setItem('sm_timeLimit',val);if(timeLimit>0)startTimeTracking();else{clearInterval(timeInterval);document.getElementById('timeBar').classList.add('hidden')}}
+function checkTimeLeft(){if(timeLimit<=0)return true;return timeUsed<timeLimit}
+
+// ===== PARENT PIN =====
+let pinBuffer='';let pinAction='';
+function setParentPIN(){
+    const pin=document.getElementById('pinInput').value;
+    if(pin.length!==4||!/^\d{4}$/.test(pin)){alert('PIN must be 4 digits');return}
+    localStorage.setItem('sm_pin',pin);alert('✅ PIN set!');
+}
+function showPinScreen(action){
+    pinAction=action;pinBuffer='';
+    updatePinDots();document.getElementById('pinMsg').textContent='';
+    showScr('pin');
+}
+function pinKey(n){if(pinBuffer.length>=4)return;pinBuffer+=n;updatePinDots()}
+function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updatePinDots()}
+function updatePinDots(){const dots=document.querySelectorAll('.pin-dot');dots.forEach((d,i)=>{d.classList.toggle('filled',i<pinBuffer.length)})}
+function pinEnter(){
+    const stored=localStorage.getItem('sm_pin');
+    if(!stored){document.getElementById('pinMsg').textContent='No PIN set. Go to Settings.';return}
+    if(pinBuffer===stored){
+        if(pinAction==='parent')showParentDash();
+        else if(pinAction==='settings')showScr('sett');
+        else if(pinAction==='time')document.getElementById('timeLimitSel').disabled=false;
+    }else{document.getElementById('pinMsg').textContent='❌ Wrong PIN';pinBuffer='';updatePinDots()}
+}
+function showParentDash(){const pin=localStorage.getItem('sm_pin');if(pin)showPinScreen('parent');else showParent()}
+function needsPinFor(action){return localStorage.getItem('sm_pin')?true:false}
+
+// ===== CERTIFICATE =====
+function showCertificate(){
+    document.getElementById('certName').textContent=S.name;
+    document.getElementById('certWords').textContent=S.wLearn+' words mastered';
+    document.getElementById('certDate').textContent='Awarded on '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    showScr('cert');
+}
+function printCert(){window.print()}
+
+// ===== WEEKLY REPORT =====
+function showWeeklyReport(){
+    const acc=S.tAtt>0?Math.round(S.tCorr/S.tAtt*100):0;
+    document.getElementById('rptScore').textContent=acc+'%';
+    document.getElementById('rptWords').textContent=S.tAtt;
+    document.getElementById('rptCorrect').textContent=S.tCorr;
+    document.getElementById('rptAcc').textContent=acc+'%';
+    const h=Math.floor(S.pMin/60),m=S.pMin%60;
+    document.getElementById('rptTime').textContent=h>0?`${h}h ${m}m`:`${m}m`;
+    document.getElementById('rptStreak').textContent=S.strk+' days';
+    document.getElementById('rptPts').textContent=S.pts;
+    const daily=document.getElementById('rptDaily');daily.innerHTML='';
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    days.forEach((d,i)=>{
+        const r=document.createElement('div');r.className='report-row';
+        r.innerHTML=`<span>${d}</span><span>${S.weeklyPts[i]||0} pts</span>`;
+        daily.appendChild(r);
+    });
+    showScr('report');
+}
+function exportReport(){
+    const acc=S.tAtt>0?Math.round(S.tCorr/S.tAtt*100):0;
+    const rpt=`SPELLMASTER PRO - WEEKLY REPORT\n${'='.repeat(40)}\nStudent: ${S.name}\nDate: ${new Date().toLocaleDateString()}\n\n--- STATS ---\nWords Practiced: ${S.tAtt}\nCorrect Answers: ${S.tCorr}\nAccuracy: ${acc}%\nPoints Earned: ${S.pts}\nBest Streak: ${S.strk} days\n\n--- DAILY BREAKDOWN ---\n${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>`${d}: ${S.weeklyPts[i]||0} pts`).join('\n')}`;
+    const blob=new Blob([rpt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`weekly_${S.name}_${new Date().toISOString().slice(0,10)}.txt`;a.click();
+}
+
+// ===== NEW THEMES =====
+function setTheme(t){S.sett.theme=t;applyTheme();save()}
+const origApplyTheme=applyTheme;
+applyTheme=function(){
+    if(S.sett.theme&&S.sett.theme!=='dark'){document.body.setAttribute('data-theme',S.sett.theme)}
+    else{document.body.setAttribute('data-theme',S.sett.dk?'dark':'light')}
+    document.getElementById('thmBtn').textContent=(S.sett.dk||['dark','midnight'].includes(S.sett.theme))?'☀️':'🌙';
+    const dt=document.getElementById('dkTog');if(dt)dt.classList.toggle('on',S.sett.dk);
+    const ts=document.getElementById('themeSelect');if(ts)ts.value=S.sett.theme||'light';
+};
+
+// ===== MULTI-LANGUAGE =====
+const LANG={en:{listen:'Listen and type',sentence:'Complete the sentence',fill:'Fill in the blanks',match:'Match word with picture',quiz:'Choose the correct answer',flash:'Tap to flip',pronun:'Say the word',hint:'💡 Hint',check:'Check ✓',next:'Next →',correct:'Correct!',wrong:'Wrong!',words:'Words',accuracy:'Accuracy',time:'Practice Time',streak:'Streak',level:'Level',points:'Points'},sw:{listen:'Sikiliza na uandike',sentence:'Kamilisha sentensi',fill:'Jaza nafasi',match:'Linganisha neno na picha',quiz:'Chagua jibu sahihi',flash:'Gusa kugeuza',pronun:'Sema neno',hint:'💡 Kidokezo',check:'Angalia ✓',next:'Endelea →',correct:'Sahihi!',wrong:'Sio sahihi!',words:'Maneno',accuracy:'Usahihi',time:'Muda wa kufanya',streak:'Mfululizo',level:'Ngazi',points:'Alama'};
+function setLang(l){S.sett.lang=l;save();updateLang()}
+function updateLang(){const l=LANG[S.sett.lang||'en']||LANG.en;document.getElementById('modeInst').textContent=l[S.mode]||l.listen}
+
+// ===== BACKUP & RESTORE =====
+function backupData(){
+    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||''};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spellmaster_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();
+    alert('✅ Backup downloaded!');
+}
+function restoreData(){
+    const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+    inp.onchange=e=>{
+        const file=e.target.files[0];if(!file)return;
+        const reader=new FileReader();
+        reader.onload=ev=>{
+            try{
+                const data=JSON.parse(ev.target.result);
+                if(data.state)localStorage.setItem('smp',JSON.stringify(data.state));
+                if(data.profiles)saveProfiles(data.profiles);
+                if(data.license)localStorage.setItem('sm_license',JSON.stringify(data.license));
+                if(data.leaderboard)localStorage.setItem('smp_lb',JSON.stringify(data.leaderboard));
+                if(data.timeData)localStorage.setItem('sm_timeData',JSON.stringify(data.timeData));
+                if(data.pin)localStorage.setItem('sm_pin',data.pin);
+                alert('✅ Data restored! Reloading...');location.reload();
+            }catch(err){alert('❌ Invalid backup file')}
+        };
+        reader.readAsText(file);
+    };
+    inp.click();
+}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
@@ -1176,10 +1533,20 @@ document.addEventListener('DOMContentLoaded',()=>{
         return;
     }
     const loaded=load();
-    if(loaded&&S.rememberMe&&S.lastUser){applyTheme();S.name=S.lastUser;if(S.lastAvatar)S.avatar=S.lastAvatar;initDash()}
+    initTimeLimit();
+    if(loaded&&S.rememberMe&&S.lastUser){
+        applyTheme();S.name=S.lastUser;if(S.lastAvatar)S.avatar=S.lastAvatar;
+        const profiles=getProfiles();
+        if(profiles.length>1){showProfiles()}
+        else{initDash()}
+    }
     else{showScr('welcome');if(loaded)applyTheme()}
     document.getElementById('nameIn').addEventListener('keypress',e=>{if(e.key==='Enter')startApp()});
     updateLicenseInfo();
+    if(S.wLearn>=100){const btn=document.getElementById('certBtn');if(btn)btn.disabled=false}
+    // Service Worker
+    if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+    setInterval(saveCurrentProfile,30000);
 });
 </script>
 </body>
