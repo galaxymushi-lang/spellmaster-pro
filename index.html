@@ -23,6 +23,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes floatItem{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-12px) rotate(5deg)}50%{transform:translateY(-6px) rotate(-3deg)}75%{transform:translateY(-15px) rotate(3deg)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin 1s linear infinite}
 @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 .welcome-sub{font-size:1.1rem;margin-bottom:20px;opacity:.9}
 .mascot-big{font-size:65px;margin-bottom:12px;animation:float 3s ease-in-out infinite}
@@ -460,9 +462,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         </div>
 
         <div class="lvl-cards">
-            <div class="lvl-card act" id="l1" onclick="selLvl(1)"><div class="lvl-num">1</div><div class="lvl-nm">Easy</div><div class="lvl-prog"><div class="lvl-bar" id="l1p" style="width:0%"></div></div></div>
-            <div class="lvl-card lk" id="l2" onclick="selLvl(2)"><div class="lvl-num">2</div><div class="lvl-nm">Medium</div><div class="lvl-prog"><div class="lvl-bar" id="l2p" style="width:0%"></div></div></div>
-            <div class="lvl-card lk" id="l3" onclick="selLvl(3)"><div class="lvl-num">3</div><div class="lvl-nm">Hard</div><div class="lvl-prog"><div class="lvl-bar" id="l3p" style="width:0%"></div></div></div>
+            <div class="lvl-card act" id="l1" onclick="selLvl(1)"><div class="lvl-num">1</div><div class="lvl-nm">Easy</div><div class="lvl-prog" id="l1t" style="font-size:.6rem;color:var(--txt2);margin-top:2px">0/10 words</div><div class="lvl-prog"><div class="lvl-bar" id="l1p" style="width:0%"></div></div></div>
+            <div class="lvl-card lk" id="l2" onclick="selLvl(2)"><div class="lvl-num">2</div><div class="lvl-nm">Medium</div><div class="lvl-prog" id="l2t" style="font-size:.6rem;color:var(--txt2);margin-top:2px">0/10 words</div><div class="lvl-prog"><div class="lvl-bar" id="l2p" style="width:0%"></div></div></div>
+            <div class="lvl-card lk" id="l3" onclick="selLvl(3)"><div class="lvl-num">3</div><div class="lvl-nm">Hard</div><div class="lvl-prog" id="l3t" style="font-size:.6rem;color:var(--txt2);margin-top:2px">0/10 words</div><div class="lvl-prog"><div class="lvl-bar" id="l3p" style="width:0%"></div></div></div>
         </div>
 
         <div class="chart-card card">
@@ -494,7 +496,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div style="width:40px;text-align:right;font-size:.9rem">⭐<span id="cPts">0</span></div>
     </div>
     <div class="timer-disp hidden" id="tmrDisp">⏱️ 60s</div>
-    <div class="timer-bar hidden" id="tmrBar"><div class="timer-fill" id="tmrFill" style="width:100%"></div></div>
+    <div class="timer-bar hidden" id="tmrBar"><div class="timer-fill" id="tmrFill" style="width:100%"></div></div><div id="tmrWords" style="font-size:.75rem;color:var(--txt2);margin-top:4px" class="hidden"></div>
 
     <div class="word-box" id="wordArea">
         <span class="lvl-badge b-e" id="pBadge">Level 1</span>
@@ -522,13 +524,13 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     </div>
 
     <div class="hidden" id="matchArea">
-        <div class="word-box" style="width:min(95%,520px)"><span class="lvl-badge b-m">Match</span><p style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Match word with picture</p><div class="match-grid" id="matchGrid"></div><div class="fb-txt" id="mFb"></div><div class="prac-act"><button class="btn btn-s hidden" id="mNxt" onclick="nextMatch()">Next →</button></div></div>
+        <div class="word-box" style="width:min(95%,520px)"><span class="lvl-badge b-m">Match</span><p style="font-size:.85rem;color:var(--txt2);margin-bottom:6px">Match word with picture</p><div id="matchCnt" style="font-size:.8rem;color:var(--txt2);margin-bottom:4px">0/6 matched</div><div class="match-grid" id="matchGrid"></div><div class="fb-txt" id="mFb"></div><div class="prac-act"><button class="btn btn-s hidden" id="mNxt" onclick="nextMatch()">Next →</button></div></div>
     </div>
 
     <div class="hidden" id="quizArea">
         <div class="word-box" style="width:min(92%,440px)">
             <span class="lvl-badge b-m">Quiz</span>
-            <p style="font-size:1.1rem;color:var(--txt);margin:8px 0" id="quizQ">Which is spelled correctly?</p>
+            <div id="quizScore" style="font-size:.8rem;color:var(--txt2);margin-bottom:4px">0/0</div><p style="font-size:1.1rem;color:var(--txt);margin:8px 0" id="quizQ">Which is spelled correctly?</p>
             <div class="quiz-options" id="quizOpts"></div>
             <div class="fb-txt" id="qFb"></div>
             <div class="word-def hidden" id="qDef"></div>
@@ -542,7 +544,11 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
                 <div class="flash-front">
                     <div class="flash-emoji" id="flashEm">🐱</div>
                     <div class="flash-word" id="flashWord">cat</div>
-                    <p style="opacity:.8;font-size:.85rem">Tap to reveal</p>
+                    <div class="flash-def" id="flashDefFront" style="opacity:.8;font-size:.85rem;margin:4px 0"></div>
+                    <div style="margin-top:8px;display:flex;gap:10px">
+                        <button class="btn btn-ok btn-sm" onclick="event.stopPropagation();flashResult(true)">Know it 👍</button>
+                        <button class="btn btn-no btn-sm" onclick="event.stopPropagation();flashResult(false)">Don't know 📖</button>
+                    </div>
                 </div>
                 <div class="flash-back">
                     <div class="flash-def" id="flashDef">A small furry pet</div>
@@ -570,7 +576,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
                 <div class="pronun-result" id="pronunResult"></div>
             </div>
             <div class="word-def hidden" id="prDef"></div>
-            <div class="prac-act"><button class="btn btn-s" onclick="nextW()">Next →</button></div>
+            <div class="prac-act"><button class="btn btn-s hidden" id="prNxt" onclick="nextW()">Next →</button></div>
         </div>
     </div>
 </div>
@@ -619,9 +625,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         </div>
         <div class="p-stat"><h3>📥 Download Words</h3>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn btn-ok btn-sm" onclick="fetchWords('easy')">📥 Easy</button>
-                <button class="btn btn-s btn-sm" onclick="fetchWords('medium')">📥 Medium</button>
-                <button class="btn btn-no btn-sm" onclick="fetchWords('hard')">📥 Hard</button>
+                <button class="btn btn-ok btn-sm fetch-btn" onclick="fetchWords('easy')">📥 Easy</button>
+                <button class="btn btn-s btn-sm fetch-btn" onclick="fetchWords('medium')">📥 Medium</button>
+                <button class="btn btn-no btn-sm fetch-btn" onclick="fetchWords('hard')">📥 Hard</button>
             </div>
             <div id="fetchStatus" style="font-size:.8rem;margin-top:6px;color:var(--ok)"></div>
             <div class="p-row" style="margin-top:6px"><span>Downloaded</span><span id="dlCount">0</span></div>
@@ -1150,7 +1156,7 @@ function speak(text,rate){
 if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{speechSynthesis.getVoices()}}
 
 // ===== STORAGE =====
-function save(){const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}
+function save(){try{const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}catch(e){console.warn('Storage full:',e.message)}}
 function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.parse(v));return true}return false}
 
 // ===== LICENSE ACTIVATION =====
@@ -1206,7 +1212,7 @@ function updStats(){
     // Update weekly pts
     const dayIdx=new Date().getDay();S.weeklyPts[dayIdx]=S.pts;save();
 }
-function updLvl(){for(let i=1;i<=3;i++){const c=document.getElementById('l'+i),p=document.getElementById('l'+i+'p');if(S.unLvl.includes(i)){c.classList.remove('lk');c.classList.toggle('act',S.lvl===i)}else c.classList.add('lk');p.style.width=Math.min(100,S.lProg[i]/10*100)+'%'}}
+function updLvl(){for(let i=1;i<=3;i++){const c=document.getElementById('l'+i),p=document.getElementById('l'+i+'p'),t=document.getElementById('l'+i+'t');if(S.unLvl.includes(i)){c.classList.remove('lk');c.classList.toggle('act',S.lvl===i)}else c.classList.add('lk');p.style.width=Math.min(100,S.lProg[i]/10*100)+'%';if(t)t.textContent=Math.min(S.lProg[i],10)+'/10 words'}}
 function updMode(){document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('act'));const m=['listen','sentence','fill','match','timer','quiz','flash','pronun'];const idx=m.indexOf(S.mode);if(idx>=0)document.querySelectorAll('.mode-card')[idx].classList.add('act')}
 function updCat(){document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('act'));document.querySelectorAll('.cat-card').forEach(c=>{if(c.textContent.trim().toLowerCase().includes(S.cat)||S.cat==='all'&&c.textContent.includes('All'))c.classList.add('act')})}
 function setMode(m){S.mode=m;updMode();save();pSnd('click')}
@@ -1257,7 +1263,7 @@ function retry(){S.isDaily?startDaily():startPrac()}
 
 function setupUI(){
     ['wordArea','fillArea','matchArea','quizArea','flashArea','pronunArea'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-    ['tmrDisp','tmrBar'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+    ['tmrDisp','tmrBar','tmrWords'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('hidden')});
     document.getElementById('subBtn').classList.remove('hidden');
     const sd=document.querySelector('.sent-disp');if(sd)sd.remove();
     if(S.mode==='listen'||S.mode==='timer'){document.getElementById('wordArea').classList.remove('hidden');document.getElementById('spellIn').classList.remove('hidden');document.getElementById('listenBtn').classList.remove('hidden');document.getElementById('modeInst').textContent='Listen and type';if(S.mode==='timer'){document.getElementById('tmrDisp').classList.remove('hidden');document.getElementById('tmrBar').classList.remove('hidden')}}
@@ -1307,15 +1313,15 @@ function loadQuiz(){
         d.onclick=()=>{
             document.querySelectorAll('.quiz-opt').forEach(o=>o.style.pointerEvents='none');
             if(opt===item.w){d.classList.add('correct');S.sCorr++;S.tCorr++;S.tAtt++;S.sPts+=S.lvl*10;S.pts+=S.lvl*10;S.lProg[S.lvl]++;pSnd('correct');showStars();
-                document.getElementById('qFb').textContent='🎉 Correct!';document.getElementById('qFb').className='fb-txt fb-ok';
+                document.getElementById('qFb').textContent='🎉 Correct!';document.getElementById('qFb').className='fb-txt fb-ok';const qs2=document.getElementById('quizScore');if(qs2)qs2.textContent=S.sCorr+'/'+(S.sCorr+S.sIncor)+' correct';
             }else{d.classList.add('wrong');document.querySelectorAll('.quiz-opt').forEach(o=>{if(o.textContent===item.w)o.classList.add('correct')});
                 S.sIncor++;S.tAtt++;pSnd('wrong');
-                document.getElementById('qFb').textContent='❌ Wrong!';document.getElementById('qFb').className='fb-txt fb-no';
+                document.getElementById('qFb').textContent='❌ Wrong!';document.getElementById('qFb').className='fb-txt fb-no';const qs3=document.getElementById('quizScore');if(qs3)qs3.textContent=S.sCorr+'/'+(S.sCorr+S.sIncor)+' correct';
             }
             if(S.cDef){const dd=document.getElementById('qDef');dd.innerHTML=`<b>📖 ${item.w}:</b> ${item.d}${item.s?' | 🇰🇪 '+item.s:''}`;dd.classList.remove('hidden')}
             document.getElementById('qNxt').classList.remove('hidden');save()};
         g.appendChild(d)});
-    document.getElementById('qFb').textContent='';document.getElementById('qDef').classList.add('hidden');document.getElementById('qNxt').classList.add('hidden')}
+    document.getElementById('qFb').textContent='';document.getElementById('qDef').classList.add('hidden');document.getElementById('qNxt').classList.add('hidden');const qs=document.getElementById('quizScore');if(qs)qs.textContent=S.sCorr+'/'+(S.sCorr+S.sIncor)+' correct'}
 
 function loadFlash(){
     const item=S.wList[S.wIdx];if(!item){finishPrac();return}
@@ -1325,6 +1331,7 @@ function loadFlash(){
     document.getElementById('flashWord').textContent=item.w;
     document.getElementById('flashDef').textContent=item.d;
     document.getElementById('flashSw').textContent=item.s?'🇰🇪 '+item.s:'';
+    const fd=document.getElementById('flashDefFront');if(fd)fd.textContent=item.d;
     document.getElementById('flFb').textContent='';document.getElementById('flNxt').classList.add('hidden');
     updBadge();speak(item.w,.7)}
 
@@ -1343,12 +1350,14 @@ function loadPronun(){
     document.getElementById('pronunWord').textContent=item.e+' '+item.w;
     document.getElementById('pronunResult').textContent='';
     document.getElementById('prDef').classList.add('hidden');
+    document.getElementById('prNxt').classList.add('hidden');
     updBadge();speak(item.w,.6)}
 
 function startPronun(){
     if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
         document.getElementById('pronunResult').textContent='❌ Speech not supported in this browser';
-        document.getElementById('pronunResult').style.color='var(--sec)';return}
+        document.getElementById('pronunResult').style.color='var(--sec)';
+        document.getElementById('prNxt').classList.remove('hidden');return}
     const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
     const recognition=new SpeechRecognition();recognition.lang='en-US';recognition.interimResults=false;recognition.maxAlternatives=3;
     document.getElementById('pronunResult').textContent='🎤 Listening...';document.getElementById('pronunResult').style.color='var(--warn)';
@@ -1361,9 +1370,10 @@ function startPronun(){
         }else{
             document.getElementById('pronunResult').textContent=` heard: "${result}" - Try again!`;
             document.getElementById('pronunResult').style.color='var(--sec)';S.tAtt++;pSnd('wrong');}
+        document.getElementById('prNxt').classList.remove('hidden');
         if(S.cDef){const d=document.getElementById('prDef');d.innerHTML=`<b>📖 ${S.cWord}:</b> ${S.cDef}${S.cSw?' | 🇰🇪 '+S.cSw:''}`;d.classList.remove('hidden')}
         save()};
-    recognition.onerror=()=>{document.getElementById('pronunResult').textContent='❌ Could not hear. Try again.';document.getElementById('pronunResult').style.color='var(--sec)'};
+    recognition.onerror=()=>{document.getElementById('pronunResult').textContent='❌ Could not hear. Try again.';document.getElementById('pronunResult').style.color='var(--sec)';document.getElementById('prNxt').classList.remove('hidden')};
     recognition.start()}
 
 function playW(){speak(S.cWord)}
@@ -1400,16 +1410,16 @@ function loadFill(){
     document.getElementById('fFb').textContent='';document.getElementById('fNxt').classList.add('hidden');updBadge();speak(word,.6)}
 
 // ===== MATCH =====
-function startMatch(){const items=[...MATCH_ITEMS].sort(()=>Math.random()-.5).slice(0,6);S.mPairs=items;S.mSel=[];S.mDone=0;const g=document.getElementById('matchGrid');g.innerHTML='';document.getElementById('mFb').textContent='';document.getElementById('mNxt').classList.add('hidden');
+function startMatch(){const items=[...MATCH_ITEMS].sort(()=>Math.random()-.5).slice(0,6);S.mPairs=items;S.mSel=[];S.mDone=0;const g=document.getElementById('matchGrid');g.innerHTML='';document.getElementById('mFb').textContent='';document.getElementById('mNxt').classList.add('hidden');const mc=document.getElementById('matchCnt');if(mc)mc.textContent='0/'+items.length+' matched';
     const words=items.map(i=>({t:'w',v:i.w,id:i.w}));const ems=items.map(i=>({t:'e',v:i.e,id:i.w}));const all=[...words,...ems].sort(()=>Math.random()-.5);
     all.forEach(c=>{const d=document.createElement('div');d.className='match-card';d.dataset.t=c.t;d.dataset.id=c.id;d.innerHTML=c.t==='w'?c.v.toUpperCase():`<div class="match-em">${c.v}</div>`;
     d.onclick=()=>{if(d.classList.contains('done')||d.classList.contains('sel'))return;d.classList.add('sel');S.mSel.push(d);pSnd('click');
-    if(S.mSel.length===2){const[a,b]=S.mSel;if(a.dataset.id===b.dataset.id&&a.dataset.t!==b.dataset.t){a.classList.add('done');b.classList.add('done');a.classList.remove('sel');b.classList.remove('sel');S.mDone++;S.sCorr++;S.tCorr++;S.tAtt++;S.sPts+=5;S.pts+=5;pSnd('star');if(S.mDone===S.mPairs.length){document.getElementById('mFb').textContent='🎉 All matched!';document.getElementById('mFb').className='fb-txt fb-ok';document.getElementById('mNxt').classList.remove('hidden')}}else{setTimeout(()=>{a.classList.remove('sel');b.classList.remove('sel')},400);S.tAtt++;pSnd('wrong')}S.mSel=[];save()}};g.appendChild(d)});updBadge()}
+    if(S.mSel.length===2){const[a,b]=S.mSel;if(a.dataset.id===b.dataset.id&&a.dataset.t!==b.dataset.t){a.classList.add('done');b.classList.add('done');a.classList.remove('sel');b.classList.remove('sel');S.mDone++;S.sCorr++;S.tCorr++;S.tAtt++;S.sPts+=5;S.pts+=5;pSnd('star');const mc2=document.getElementById('matchCnt');if(mc2)mc2.textContent=S.mDone+'/'+S.mPairs.length+' matched';if(S.mDone===S.mPairs.length){document.getElementById('mFb').textContent='🎉 All matched!';document.getElementById('mFb').className='fb-txt fb-ok';document.getElementById('mNxt').classList.remove('hidden')}}else{setTimeout(()=>{a.classList.remove('sel');b.classList.remove('sel')},400);S.tAtt++;pSnd('wrong')}S.mSel=[];save()}};g.appendChild(d)});updBadge()}
 function nextMatch(){S.wIdx++;if(S.wIdx>=3)finishPrac();else startMatch()}
 
 // ===== TIMER =====
 function startTmr(){clearInterval(S.tmrInt);S.tmrSec=60;updTmr();S.tmrInt=setInterval(()=>{S.tmrSec--;updTmr();if(S.tmrSec<=0){clearInterval(S.tmrInt);finishPrac()}},1000)}
-function updTmr(){document.getElementById('tmrDisp').textContent=`⏱️ ${S.tmrSec}s`;document.getElementById('tmrFill').style.width=(S.tmrSec/60*100)+'%'}
+function updTmr(){document.getElementById('tmrDisp').textContent=`⏱️ ${S.tmrSec}s`;document.getElementById('tmrFill').style.width=(S.tmrSec/60*100)+'%';const tw=document.getElementById('tmrWords');if(tw&&S.wList){tw.textContent=`Words left: ${S.wList.length-S.wIdx}`;tw.classList.remove('hidden')}}
 
 // ===== HINT =====
 function showHint(){const w=S.cWord;const h=[`Starts with "${w[0].toUpperCase()}"`,`${w.length} letters`,`First two: "${w.substring(0,2)}"`];document.getElementById('hintC').textContent='💡 '+h[Math.floor(Math.random()*h.length)];document.getElementById('hintC').classList.remove('hidden');pSnd('click')}
@@ -1459,7 +1469,7 @@ function useCustomWords(){if(S.customWords.length===0){alert('Add some words fir
 // ===== FETCH WORDS =====
 const EMOJIS=['🍎','🐶','☀️','🌈','⭐','🌙','🐟','🐦','🌳','⚽','🎂','📚','🐸','🦁','🐱','🌻','🐝','🦋','🐧','🦒','🐢','🐙','🕷️','🦊','🐰','🐻','🐯','🐨'];
 async function fetchWords(level){
-    const status=document.getElementById('fetchStatus');status.textContent='🔄 Downloading...';status.style.color='var(--warn)';
+    const status=document.getElementById('fetchStatus');status.innerHTML='<span class="spin">⏳</span> Downloading...';status.style.color='var(--warn)';document.querySelectorAll('.fetch-btn').forEach(b=>b.disabled=true);
     if(!navigator.onLine){status.textContent='❌ No internet';status.style.color='var(--sec)';return}
     const count=level==='easy'?12:level==='medium'?10:8;let fetched=[];
     try{
@@ -1469,9 +1479,9 @@ async function fetchWords(level){
             if(resp.ok){const data=await resp.json();const valid=data.filter(w=>w.word.length<=maxLen&&w.word.length>=(level==='easy'?3:4)&&/^[a-z]+$/.test(w.word)&&w.defs&&w.defs.length>0);
             if(valid.length>0){const pick=valid[Math.floor(Math.random()*valid.length)];fetched.push({w:pick.word,d:pick.defs[0]?pick.defs[0].replace(/^\w+\s*/,''):'Word',s:'',e:EMOJIS[Math.floor(Math.random()*EMOJIS.length)],src:'online',lvl:level})}}}catch(e){}}
         let added=0;fetched.forEach(f=>{if(!S.downloadedWords.find(d=>d.w===f.w)){S.downloadedWords.push(f);added++}});
-        S.lastFetch=Date.now();save();status.textContent=`✅ ${added} new words! Total: ${S.downloadedWords.length}`;status.style.color='var(--ok)';
+        S.lastFetch=Date.now();save();status.textContent=`✅ ${added} new words! Total: ${S.downloadedWords.length}`;status.style.color='var(--ok)';document.querySelectorAll('.fetch-btn').forEach(b=>b.disabled=false);
         document.getElementById('dlCount').textContent=S.downloadedWords.length;pSnd('star');
-    }catch(err){status.textContent='❌ Error';status.style.color='var(--sec)'}}
+    }catch(err){status.textContent='❌ Error';status.style.color='var(--sec)';document.querySelectorAll('.fetch-btn').forEach(b=>b.disabled=false)}}
 
 // ===== PARENT DASHBOARD =====
 function showParent(){if(localStorage.getItem('sm_pin')){showPinScreen('parent')}else{showParentDash()}}
@@ -1603,7 +1613,7 @@ for(let i=0;i<f;i++){const c=document.createElement('div');c.className='cal-day'
 for(let d=1;d<=days;d++){const c=document.createElement('div');c.className='cal-day';c.textContent=d;const ds=new Date(t.getFullYear(),t.getMonth(),d).toDateString();if(S.pracDays.includes(ds))c.classList.add('prac');if(d===t.getDate())c.classList.add('today');g.appendChild(c)}}
 
 // ===== KEYBOARD =====
-document.addEventListener('keydown',e=>{if(e.key==='Enter'){const ps=document.getElementById('pracScreen');if(!ps.classList.contains('hidden')){if(!document.getElementById('subBtn').classList.contains('hidden'))checkW();else if(!document.getElementById('nxtBtn').classList.contains('hidden'))nextW();else if(!document.getElementById('fNxt').classList.contains('hidden')){S.wIdx++;loadFill()}}}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){const ps=document.getElementById('pracScreen');if(!ps.classList.contains('hidden')){if(!document.getElementById('subBtn').classList.contains('hidden'))checkW();else if(!document.getElementById('nxtBtn').classList.contains('hidden'))nextW();else if(!document.getElementById('fNxt').classList.contains('hidden'))nextW();else if(!document.getElementById('flNxt').classList.contains('hidden'))nextW();else if(!document.getElementById('prNxt').classList.contains('hidden'))nextW()}}});
 
 // ===== MULTIPLE PROFILES =====
 function getProfiles(){return JSON.parse(localStorage.getItem('sm_profiles')||'[]')}
