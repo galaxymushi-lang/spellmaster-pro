@@ -612,7 +612,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div class="p-stat"><h3>📤 Export</h3><button class="btn btn-s btn-sm" onclick="exportProgress()">Download Report</button></div>
         <div class="p-stat"><h3>📊 Weekly Report</h3><button class="btn btn-s btn-sm" onclick="showWeeklyReport()">View Report</button></div>
         <div class="p-stat"><h3>🏆 Certificate</h3><p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Earn a certificate at 100+ words</p><button class="btn btn-p btn-sm" onclick="showCertificate()" id="certBtn" disabled>Generate Certificate</button></div>
-        <div class="p-stat"><h3>📥 Backup & Restore</h3><div style="display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="backupData()">📤 Backup</button><button class="btn btn-ok btn-sm" onclick="restoreData()">📥 Restore</button></div></div>
+        <div class="p-stat"><h3>📥 Backup & Restore</h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-s btn-sm" onclick="backupData()">💾 Download</button><button class="btn btn-ok btn-sm" onclick="emailBackup()">📧 Email Backup</button><button class="btn btn-no btn-sm" onclick="restoreData()">📥 Restore</button></div></div>
     </div>
     <div style="height:65px"></div>
 </div>
@@ -653,7 +653,12 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             </div>
         </div>
         <div class="sett-item"><span class="sett-lb">👨‍👩‍👧 Profiles</span><button class="btn btn-s btn-sm" onclick="showProfiles()">Manage</button></div>
-        <div class="sett-item"><span class="sett-lb">📤 Backup Data</span><button class="btn btn-s btn-sm" onclick="backupData()">Backup</button></div>
+        <div class="sett-item"><span class="sett-lb">📤 Backup Data</span>
+            <div style="display:flex;gap:6px">
+                <button class="btn btn-s btn-sm" onclick="backupData()">💾 Download</button>
+                <button class="btn btn-ok btn-sm" onclick="emailBackup()">📧 Email</button>
+            </div>
+        </div>
         <div class="sett-item"><span class="sett-lb">📥 Restore Data</span><button class="btn btn-s btn-sm" onclick="restoreData()">Restore</button></div>
         <div class="sett-item"><span class="sett-lb">👤 Switch User</span><button class="btn btn-s btn-sm" onclick="switchUser()">Switch</button></div>
         <div class="sett-item" style="flex-direction:column;align-items:flex-start;gap:5px;border-top:1px solid var(--border);padding-top:15px;margin-top:10px">
@@ -1495,26 +1500,46 @@ function backupData(){
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spellmaster_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();
     alert('✅ Backup downloaded!');
 }
+function emailBackup(){
+    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||''};
+    const json=JSON.stringify(data);
+    const encoded=btoa(unescape(encodeURIComponent(json)));
+    const subject=`SpellMaster Pro Backup - ${S.name} - ${new Date().toLocaleDateString()}`;
+    const body=`Hi,\n\nHere is my SpellMaster Pro backup.\n\nStudent: ${S.name}\nWords Learned: ${S.wLearn}\nPoints: ${S.pts}\n\n--- COPY EVERYTHING BELOW THIS LINE ---\n${encoded}\n--- END OF BACKUP ---\n\nTo restore: Open SpellMaster Pro → Settings → Restore → Paste the code between the lines above.`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,'_blank');
+    alert('📧 Email opened! Send it to yourself and save it safely.');
+}
 function restoreData(){
-    const inp=document.createElement('input');inp.type='file';inp.accept='.json';
-    inp.onchange=e=>{
-        const file=e.target.files[0];if(!file)return;
-        const reader=new FileReader();
-        reader.onload=ev=>{
-            try{
-                const data=JSON.parse(ev.target.result);
-                if(data.state)localStorage.setItem('smp',JSON.stringify(data.state));
-                if(data.profiles)saveProfiles(data.profiles);
-                if(data.license)localStorage.setItem('sm_license',JSON.stringify(data.license));
-                if(data.leaderboard)localStorage.setItem('smp_lb',JSON.stringify(data.leaderboard));
-                if(data.timeData)localStorage.setItem('sm_timeData',JSON.stringify(data.timeData));
-                if(data.pin)localStorage.setItem('sm_pin',data.pin);
-                alert('✅ Data restored! Reloading...');location.reload();
-            }catch(err){alert('❌ Invalid backup file')}
+    const method=prompt('Restore method:\n\n1 = Upload file\n2 = Paste backup code\n\nEnter 1 or 2:');
+    if(method==='2'){
+        const code=prompt('Paste your backup code:');
+        if(!code)return;
+        try{
+            const json=decodeURIComponent(escape(atob(code.trim())));
+            const data=JSON.parse(json);
+            applyRestore(data);
+        }catch(err){alert('❌ Invalid backup code')}
+    }else{
+        const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+        inp.onchange=e=>{
+            const file=e.target.files[0];if(!file)return;
+            const reader=new FileReader();
+            reader.onload=ev=>{
+                try{applyRestore(JSON.parse(ev.target.result))}catch(err){alert('❌ Invalid backup file')}
+            };
+            reader.readAsText(file);
         };
-        reader.readAsText(file);
-    };
-    inp.click();
+        inp.click();
+    }
+}
+function applyRestore(data){
+    if(data.state)localStorage.setItem('smp',JSON.stringify(data.state));
+    if(data.profiles)saveProfiles(data.profiles);
+    if(data.license)localStorage.setItem('sm_license',JSON.stringify(data.license));
+    if(data.leaderboard)localStorage.setItem('smp_lb',JSON.stringify(data.leaderboard));
+    if(data.timeData)localStorage.setItem('sm_timeData',JSON.stringify(data.timeData));
+    if(data.pin)localStorage.setItem('sm_pin',data.pin);
+    alert('✅ Data restored! Reloading...');location.reload();
 }
 
 // ===== INIT =====
