@@ -273,11 +273,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
     <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
     <p style="margin-top:15px;font-size:.75rem;opacity:.7;animation:fadeInUp 1.6s ease">Get your key from the app administrator</p>
-    <div style="margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.2);animation:fadeInUp 1.8s ease">
-        <p style="font-size:.8rem;opacity:.8;margin-bottom:8px">🔑 Admin? Generate license keys</p>
-        <button class="btn btn-s" onclick="openKeyGen()" style="font-size:.85rem;padding:10px 24px">⚙️ Admin Panel</button>
-    </div>
-    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group</p>
+    <button class="btn btn-s" onclick="openKeyGen()" style="margin-top:15px;animation:fadeInUp 1.8s ease;font-size:.85rem">⚙️ Admin Panel</button>
+    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
 </div>
 
 <!-- Profile Selection -->
@@ -716,16 +713,16 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <p style="font-size:.8rem;color:var(--txt2);margin-bottom:15px">From Galactos Group</p>
         <div id="adminPassScreen">
             <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">Enter admin password</p>
-            <input type="password" id="adminPassIn" class="nm-in" placeholder="Enter password..." onkeypress="if(event.key==='Enter')verifyAdmin()" style="text-align:center;font-size:1rem">
+            <input type="password" id="adminPassIn" class="nm-in" placeholder="Password..." onkeypress="if(event.key==='Enter')verifyAdmin()" style="text-align:center;font-size:1rem">
             <button class="btn btn-p" style="margin-top:12px;width:100%;padding:14px" onclick="verifyAdmin()">Verify ✅</button>
         </div>
         <div id="adminKeyGen" class="hidden">
-            <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">How many days should this key be valid?</p>
-            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" placeholder="Days" style="text-align:center;font-size:1.1rem">
+            <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">How many days?</p>
+            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" style="text-align:center;font-size:1.1rem">
             <button class="btn btn-p" style="margin-top:12px;width:100%;padding:14px" onclick="generateKeyBtn()">Generate Key 🔑</button>
             <div id="genKeyDisplay" class="hidden" style="margin-top:15px;text-align:left"></div>
         </div>
-        <button style="margin-top:15px;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.85rem;padding:8px 16px;border-radius:8px" onclick="closeKeyGen()">✕ Close</button>
+        <button style="margin-top:15px;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.85rem;padding:8px 16px" onclick="closeKeyGen()">✕ Close</button>
     </div>
 </div>
 
