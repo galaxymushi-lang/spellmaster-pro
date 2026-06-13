@@ -525,6 +525,32 @@ function _0x7g8h(s){return atob(s)}
 const ADMIN_PASS=_0x7g8h(_0x3c4d);
 const ADMIN_SECRET=_0x7g8h(_0x5e6f);
 
+function getDeviceFingerprint(){
+    const c=document.createElement('canvas');
+    const ctx=c.getContext('2d');
+    ctx.textBaseline='top';
+    ctx.font='14px Arial';
+    ctx.fillText('fingerprint',2,2);
+    const canvasData=c.toDataURL();
+    const raw=[
+        navigator.userAgent,
+        screen.width+'x'+screen.height,
+        screen.colorDepth,
+        new Date().getTimezoneOffset(),
+        navigator.language,
+        navigator.platform,
+        navigator.hardwareConcurrency||'unknown',
+        navigator.deviceMemory||'unknown',
+        canvasData.slice(-50)
+    ].join('|');
+    let hash=0;
+    for(let i=0;i<raw.length;i++){
+        hash=((hash<<5)-hash)+raw.charCodeAt(i);
+        hash|=0;
+    }
+    return Math.abs(hash).toString(36);
+}
+
 function generateKey(days, adminPassword) {
     if (adminPassword !== ADMIN_PASS) return null;
     const expiry = Date.now() + (days * 86400000);
@@ -569,6 +595,12 @@ function checkLicense() {
         const daysUsed = Math.floor((Date.now() - (decoded.expiry - decoded.days * 86400000)) / 86400000);
         return { valid: false, reason: 'expired', days: daysUsed };
     }
+    if (data.deviceId) {
+        const currentDevice = getDeviceFingerprint();
+        if (data.deviceId !== currentDevice) {
+            return { valid: false, reason: 'device_mismatch' };
+        }
+    }
     const daysLeft = Math.ceil((decoded.expiry - Date.now()) / 86400000);
     return { valid: true, daysLeft, totalDays: decoded.days };
 }
@@ -577,7 +609,10 @@ function activateKey(key) {
     const decoded = decodeKey(key);
     if (!decoded) return false;
     if (Date.now() > decoded.expiry) return false;
-    const data = { key, activatedAt: new Date().toISOString() };
+    const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
+    const deviceId = getDeviceFingerprint();
+    if (existing.key && existing.deviceId && existing.deviceId !== deviceId) return false;
+    const data = { key, activatedAt: new Date().toISOString(), deviceId };
     localStorage.setItem('sm_license', JSON.stringify(data));
     return true;
 }
@@ -771,7 +806,12 @@ function activateBtn() {
         }, 800);
     } else {
         msg.style.color = 'var(--sec)';
-        msg.textContent = '❌ Invalid or expired key. Contact admin.';
+        const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
+        if (existing.key && existing.key !== key) {
+            msg.textContent = '❌ This key is already used on another device!';
+        } else {
+            msg.textContent = '❌ Invalid or expired key. Contact admin.';
+        }
     }
 }
 
@@ -1129,6 +1169,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(lic.reason==='expired'){
             document.getElementById('licenseMsg').style.color='var(--sec)';
             document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
+        } else if(lic.reason==='device_mismatch'){
+            document.getElementById('licenseMsg').style.color='var(--sec)';
+            document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
         }
         return;
     }
