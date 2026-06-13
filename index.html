@@ -20,6 +20,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 .welcome-title{font-size:clamp(2rem,8vw,3.2rem);font-weight:800;margin-bottom:6px;animation:bounce 2s ease infinite}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 .welcome-sub{font-size:1.1rem;margin-bottom:20px;opacity:.9}
 .mascot-big{font-size:65px;margin-bottom:12px;animation:float 3s ease-in-out infinite}
 .avatar-sel{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
@@ -263,15 +266,18 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 
 <!-- License Key Screen -->
 <div id="licenseScreen" class="screen welcome-screen">
-    <div class="mascot-big">🔑</div>
-    <h1 class="welcome-title">SpellMaster Pro</h1>
-    <p class="welcome-sub">Enter your license key to activate</p>
-    <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase" onkeypress="if(event.key==='Enter')activateBtn()">
+    <div class="mascot-big" style="animation:float 2s ease-in-out infinite">🔑</div>
+    <h1 class="welcome-title" style="animation:bounce 2s ease infinite">SpellMaster Pro</h1>
+    <p class="welcome-sub" style="animation:fadeInUp 1s ease">Enter your license key to activate</p>
+    <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase;animation:fadeInUp 1.2s ease" onkeypress="if(event.key==='Enter')activateBtn()">
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
-    <button class="btn btn-p" onclick="activateBtn()">Activate ✅</button>
-    <p style="margin-top:15px;font-size:.75rem;opacity:.7">Get your key from the app administrator</p>
-    <p style="margin-top:8px;font-size:.7rem;opacity:.5">Need a key? Contact: your-email@gmail.com</p>
-    <button style="margin-top:12px;background:none;border:none;color:var(--txt2);font-size:.75rem;cursor:pointer" onclick="openKeyGen()">⚙️ Admin</button>
+    <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
+    <p style="margin-top:15px;font-size:.75rem;opacity:.7;animation:fadeInUp 1.6s ease">Get your key from the app administrator</p>
+    <div style="margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.2);animation:fadeInUp 1.8s ease">
+        <p style="font-size:.8rem;opacity:.8;margin-bottom:8px">🔑 Admin? Generate license keys</p>
+        <button class="btn btn-s" onclick="openKeyGen()" style="font-size:.85rem;padding:10px 24px">⚙️ Admin Panel</button>
+    </div>
+    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group</p>
 </div>
 
 <!-- Profile Selection -->
@@ -368,11 +374,11 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <div id="welcomeScreen" class="screen welcome-screen hidden">
-    <div class="mascot-big" id="mascotBig">🦉</div>
-    <h1 class="welcome-title">SpellMaster Pro</h1>
-    <p class="welcome-sub">Learn to spell with fun! 🔤</p>
-    <p style="margin-bottom:6px;font-size:.85rem;opacity:.9">Choose your mascot:</p>
-    <div class="avatar-sel">
+    <div class="mascot-big" id="mascotBig" style="animation:float 2s ease-in-out infinite">🦉</div>
+    <h1 class="welcome-title" style="animation:bounce 2s ease infinite">SpellMaster Pro</h1>
+    <p class="welcome-sub" style="animation:fadeInUp 1s ease">Learn to spell with fun! 🔤</p>
+    <p style="margin-bottom:6px;font-size:.85rem;opacity:.9;animation:fadeInUp 1.2s ease">Choose your mascot:</p>
+    <div class="avatar-sel" style="animation:fadeInUp 1.4s ease">
         <div class="av-opt sel" data-a="🦉" onclick="pickAv(this)">🦉</div>
         <div class="av-opt" data-a="🐱" onclick="pickAv(this)">🐱</div>
         <div class="av-opt" data-a="🐶" onclick="pickAv(this)">🐶</div>
@@ -380,11 +386,12 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div class="av-opt" data-a="🦊" onclick="pickAv(this)">🦊</div>
         <div class="av-opt" data-a="🐻" onclick="pickAv(this)">🐻</div>
     </div>
-    <input type="text" id="nameIn" class="nm-in" placeholder="What's your name?" maxlength="20">
-    <label style="margin-bottom:12px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:6px">
+    <input type="text" id="nameIn" class="nm-in" placeholder="What's your name?" maxlength="20" style="animation:fadeInUp 1.6s ease">
+    <label style="margin-bottom:12px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:6px;animation:fadeInUp 1.8s ease">
         <input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;cursor:pointer"> Remember me
     </label>
-    <button class="btn btn-p" onclick="startApp()">Let's Go! 🚀</button>
+    <button class="btn btn-p" onclick="startApp()" style="animation:fadeInUp 2s ease">Let's Go! 🚀</button>
+    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2.2s ease">From Galactos Group 💜</p>
 </div>
 
 <!-- Dashboard -->
@@ -392,6 +399,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <div class="hdr">
         <div class="hdr-t"><span id="hMascot">🦉</span> SpellMaster</div>
         <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:.6rem;opacity:.7">Galactos</span>
             <button class="snd-tog" onclick="togSnd()" id="sndBtn">🔊</button>
             <button class="snd-tog" onclick="togTheme()" id="thmBtn">🌙</button>
             <div class="hdr-pts">⭐ <span id="tPts">0</span></div>
@@ -702,20 +710,22 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 
 <!-- Admin Key Generator Modal -->
 <div id="keyGenModal" class="celebration hidden" style="padding:20px">
-    <div style="background:var(--card);border-radius:16px;padding:24px;max-width:400px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)">
-        <h2 style="margin:0 0 15px;font-size:1.3rem">🔑 Key Generator</h2>
+    <div style="background:var(--card);border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:fadeInUp .3s ease">
+        <div style="font-size:3rem;margin-bottom:10px">🔐</div>
+        <h2 style="margin:0 0 5px;font-size:1.4rem;color:var(--pri)">Admin Panel</h2>
+        <p style="font-size:.8rem;color:var(--txt2);margin-bottom:15px">From Galactos Group</p>
         <div id="adminPassScreen">
             <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">Enter admin password</p>
-            <input type="password" id="adminPassIn" class="nm-in" placeholder="Admin password..." onkeypress="if(event.key==='Enter')verifyAdmin()">
-            <button class="btn btn-p" style="margin-top:10px;width:100%" onclick="verifyAdmin()">Verify ✅</button>
+            <input type="password" id="adminPassIn" class="nm-in" placeholder="Enter password..." onkeypress="if(event.key==='Enter')verifyAdmin()" style="text-align:center;font-size:1rem">
+            <button class="btn btn-p" style="margin-top:12px;width:100%;padding:14px" onclick="verifyAdmin()">Verify ✅</button>
         </div>
         <div id="adminKeyGen" class="hidden">
             <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">How many days should this key be valid?</p>
-            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" placeholder="Days">
-            <button class="btn btn-p" style="margin-top:10px;width:100%" onclick="generateKeyBtn()">Generate Key 🔑</button>
+            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" placeholder="Days" style="text-align:center;font-size:1.1rem">
+            <button class="btn btn-p" style="margin-top:12px;width:100%;padding:14px" onclick="generateKeyBtn()">Generate Key 🔑</button>
             <div id="genKeyDisplay" class="hidden" style="margin-top:15px;text-align:left"></div>
         </div>
-        <button style="margin-top:15px;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.85rem" onclick="closeKeyGen()">✕ Close</button>
+        <button style="margin-top:15px;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.85rem;padding:8px 16px;border-radius:8px" onclick="closeKeyGen()">✕ Close</button>
     </div>
 </div>
 
