@@ -498,6 +498,25 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </div>
 <div id="starsC" class="stars-c"></div>
 
+<!-- Admin Key Generator Modal -->
+<div id="keyGenModal" class="celebration hidden" style="padding:20px">
+    <div style="background:var(--card);border-radius:16px;padding:24px;max-width:400px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)">
+        <h2 style="margin:0 0 15px;font-size:1.3rem">🔑 Key Generator</h2>
+        <div id="adminPassScreen">
+            <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">Enter admin password</p>
+            <input type="password" id="adminPassIn" class="nm-in" placeholder="Admin password..." onkeypress="if(event.key==='Enter')verifyAdmin()">
+            <button class="btn btn-p" style="margin-top:10px;width:100%" onclick="verifyAdmin()">Verify ✅</button>
+        </div>
+        <div id="adminKeyGen" class="hidden">
+            <p style="margin:10px 0;font-size:.85rem;color:var(--txt2)">How many days should this key be valid?</p>
+            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" placeholder="Days">
+            <button class="btn btn-p" style="margin-top:10px;width:100%" onclick="generateKeyBtn()">Generate Key 🔑</button>
+            <div id="genKeyDisplay" class="hidden" style="margin-top:15px;text-align:left"></div>
+        </div>
+        <button style="margin-top:15px;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.85rem" onclick="closeKeyGen()">✕ Close</button>
+    </div>
+</div>
+
 <script>
 // ===== LICENSE KEY SYSTEM =====
 const _0x1a2b=['YWRtaW4yMDI0','c3BlbGxtYXN0ZXItYWRtaW4tMjAyNA=='];
@@ -574,14 +593,32 @@ function resetLicense() {
 
 // ===== KEY GENERATOR (For Admin) =====
 function openKeyGen() {
-    const pass = prompt('Enter admin password:');
-    if (pass !== ADMIN_PASS) { alert('❌ Wrong password!'); return; }
-    const days = prompt('Enter license duration (days):', '30');
-    if (!days) return;
-    const key = generateKey(parseInt(days), ADMIN_PASS);
+    document.getElementById('keyGenModal').classList.remove('hidden');
+    document.getElementById('adminPassScreen').classList.remove('hidden');
+    document.getElementById('adminKeyGen').classList.add('hidden');
+    document.getElementById('genKeyDisplay').classList.add('hidden');
+}
+function closeKeyGen(){
+    document.getElementById('keyGenModal').classList.add('hidden');
+}
+function verifyAdmin(){
+    const pass=document.getElementById('adminPassIn').value;
+    if(pass!==ADMIN_PASS){alert('❌ Wrong password!');return;}
+    document.getElementById('adminPassScreen').classList.add('hidden');
+    document.getElementById('adminKeyGen').classList.remove('hidden');
+}
+function generateKeyBtn(){
+    const days = parseInt(document.getElementById('keyDaysIn').value);
+    if(!days||days<1){alert('Enter valid days');return;}
+    const key = generateKey(days, ADMIN_PASS);
     const decoded = decodeKey(key);
     const expDate = new Date(decoded.expiry).toLocaleDateString();
-    alert(`🔑 LICENSE KEY (valid ${days} days, expires ${expDate}):\n\n${key}\n\n📋 Copy this key and give it to the user.`);
+    document.getElementById('genKeyDisplay').innerHTML=`<div style="background:var(--bg2);padding:12px;border-radius:8px;font-family:monospace;font-size:1rem;word-break:break-all;cursor:pointer;border:2px dashed var(--pri)" onclick="copyKey(this)" title="Click to copy">${key}</div><p style="margin-top:8px;font-size:.8rem;color:var(--txt2)">Expires: ${expDate} | Duration: ${days} days</p><p style="font-size:.75rem;color:var(--ok)">✅ Click key above to copy</p>`;
+    document.getElementById('genKeyDisplay').classList.remove('hidden');
+}
+function copyKey(el){
+    const key=el.textContent;
+    navigator.clipboard.writeText(key).then(()=>{el.style.borderColor='var(--ok)';el.insertAdjacentHTML('afterend','<p style="color:var(--ok);font-size:.8rem;margin-top:4px">✅ Copied!</p>');}).catch(()=>{const t=document.createElement('textarea');t.value=key;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);el.style.borderColor='var(--ok)';});
 }
 
 // ===== STATE =====
