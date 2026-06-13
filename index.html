@@ -612,7 +612,18 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
         <div class="p-stat"><h3>📤 Export</h3><button class="btn btn-s btn-sm" onclick="exportProgress()">Download Report</button></div>
         <div class="p-stat"><h3>📊 Weekly Report</h3><button class="btn btn-s btn-sm" onclick="showWeeklyReport()">View Report</button></div>
         <div class="p-stat"><h3>🏆 Certificate</h3><p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Earn a certificate at 100+ words</p><button class="btn btn-p btn-sm" onclick="showCertificate()" id="certBtn" disabled>Generate Certificate</button></div>
-        <div class="p-stat"><h3>📥 Backup & Restore</h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-s btn-sm" onclick="backupData()">💾 Download</button><button class="btn btn-ok btn-sm" onclick="emailBackup()">📧 Email Backup</button><button class="btn btn-no btn-sm" onclick="restoreData()">📥 Restore</button></div></div>
+        <div class="p-stat"><h3>📥 Backup & Restore</h3>
+            <p style="font-size:.8rem;color:var(--txt2);margin-bottom:8px">Save your child's progress. Enter email to backup across devices.</p>
+            <div style="display:flex;gap:6px;margin-bottom:8px">
+                <input type="email" id="pBackupEmail" class="nm-in" style="width:100%;margin:0;font-size:.85rem" placeholder="your@email.com" value="${localStorage.getItem('sm_backupEmail')||''}">
+                <button class="btn btn-ok btn-sm" onclick="saveParentEmail()">Save</button>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn btn-s btn-sm" onclick="emailBackup()">📧 Email Backup</button>
+                <button class="btn btn-p btn-sm" onclick="emailRestore()">📥 Restore</button>
+                <button class="btn btn-no btn-sm" onclick="backupData()">💾 Download</button>
+            </div>
+        </div>
     </div>
     <div style="height:65px"></div>
 </div>
@@ -653,13 +664,20 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             </div>
         </div>
         <div class="sett-item"><span class="sett-lb">👨‍👩‍👧 Profiles</span><button class="btn btn-s btn-sm" onclick="showProfiles()">Manage</button></div>
-        <div class="sett-item"><span class="sett-lb">📤 Backup Data</span>
-            <div style="display:flex;gap:6px">
-                <button class="btn btn-s btn-sm" onclick="backupData()">💾 Download</button>
-                <button class="btn btn-ok btn-sm" onclick="emailBackup()">📧 Email</button>
+        <div class="sett-item" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <span class="sett-lb">📧 Email Backup</span>
+            <p style="font-size:.75rem;color:var(--txt2)">Enter your email to backup & restore data across devices</p>
+            <div style="display:flex;gap:6px;width:100%">
+                <input type="email" id="backupEmail" class="nm-in" style="width:100%;margin:0;font-size:.85rem" placeholder="your@email.com">
+                <button class="btn btn-ok btn-sm" onclick="saveBackupEmail()">Save</button>
+            </div>
+            <p id="emailStatus" style="font-size:.75rem;min-height:16px"></p>
+            <div style="display:flex;gap:6px;width:100%">
+                <button class="btn btn-s btn-sm" style="flex:1" onclick="emailBackup()">📤 Backup to Email</button>
+                <button class="btn btn-p btn-sm" style="flex:1" onclick="emailRestore()">📥 Restore from Email</button>
             </div>
         </div>
-        <div class="sett-item"><span class="sett-lb">📥 Restore Data</span><button class="btn btn-s btn-sm" onclick="restoreData()">Restore</button></div>
+        <div class="sett-item"><span class="sett-lb">📥 Restore from File</span><button class="btn btn-s btn-sm" onclick="restoreData()">Upload File</button></div>
         <div class="sett-item"><span class="sett-lb">👤 Switch User</span><button class="btn btn-s btn-sm" onclick="switchUser()">Switch</button></div>
         <div class="sett-item" style="flex-direction:column;align-items:flex-start;gap:5px;border-top:1px solid var(--border);padding-top:15px;margin-top:10px">
             <span class="sett-lb">🔑 License Info</span>
@@ -1500,14 +1518,38 @@ function backupData(){
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spellmaster_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();
     alert('✅ Backup downloaded!');
 }
+function saveBackupEmail(){
+    const email=document.getElementById('backupEmail').value.trim();
+    if(!email||!email.includes('@')){document.getElementById('emailStatus').innerHTML='<span style="color:var(--sec)">❌ Enter valid email</span>';return}
+    localStorage.setItem('sm_backupEmail',email);
+    document.getElementById('emailStatus').innerHTML='<span style="color:var(--ok)">✅ Email saved!</span>';
+}
 function emailBackup(){
-    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||''};
+    let email=localStorage.getItem('sm_backupEmail');
+    if(!email){
+        email=prompt('Enter your email address:');
+        if(!email||!email.includes('@')){alert('❌ Enter valid email');return}
+        localStorage.setItem('sm_backupEmail',email);
+    }
+    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||'',email:email,backupDate:new Date().toISOString()};
     const json=JSON.stringify(data);
     const encoded=btoa(unescape(encodeURIComponent(json)));
     const subject=`SpellMaster Pro Backup - ${S.name} - ${new Date().toLocaleDateString()}`;
-    const body=`Hi,\n\nHere is my SpellMaster Pro backup.\n\nStudent: ${S.name}\nWords Learned: ${S.wLearn}\nPoints: ${S.pts}\n\n--- COPY EVERYTHING BELOW THIS LINE ---\n${encoded}\n--- END OF BACKUP ---\n\nTo restore: Open SpellMaster Pro → Settings → Restore → Paste the code between the lines above.`;
-    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,'_blank');
-    alert('📧 Email opened! Send it to yourself and save it safely.');
+    const body=`SPELLMASTER PRO BACKUP\n========================\n\nStudent: ${S.name}\nEmail: ${email}\nDate: ${new Date().toLocaleDateString()}\nWords: ${S.wLearn}\nPoints: ${S.pts}\n\n========================\nBACKUP CODE (copy everything below):\n${encoded}\n========================\n\nTo restore: Open SpellMaster Pro → Settings → Email Backup → Restore from Email → Paste this code.`;
+    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,'_blank');
+    alert(`📧 Email opened!\n\n1. Send the email to yourself\n2. Save it in a folder called "SpellMaster Backup"\n3. When you get a new phone, find this email and paste the code`);
+}
+function emailRestore(){
+    const email=localStorage.getItem('sm_backupEmail');
+    if(email){document.getElementById('backupEmail').value=email}
+    const code=prompt(`Enter your backup code:\n\n(From your email titled "SpellMaster Pro Backup")\n\nYour saved email: ${email||'None'}`);
+    if(!code||!code.trim())return;
+    try{
+        const json=decodeURIComponent(escape(atob(code.trim())));
+        const data=JSON.parse(json);
+        if(data.email){localStorage.setItem('sm_backupEmail',data.email)}
+        applyRestore(data);
+    }catch(err){alert('❌ Invalid backup code. Make sure you copied the entire code between the lines.')}
 }
 function restoreData(){
     const method=prompt('Restore method:\n\n1 = Upload file\n2 = Paste backup code\n\nEnter 1 or 2:');
@@ -1539,7 +1581,13 @@ function applyRestore(data){
     if(data.leaderboard)localStorage.setItem('smp_lb',JSON.stringify(data.leaderboard));
     if(data.timeData)localStorage.setItem('sm_timeData',JSON.stringify(data.timeData));
     if(data.pin)localStorage.setItem('sm_pin',data.pin);
+    if(data.email)localStorage.setItem('sm_backupEmail',data.email);
     alert('✅ Data restored! Reloading...');location.reload();
+}
+function saveParentEmail(){
+    const email=document.getElementById('pBackupEmail').value.trim();
+    if(!email||!email.includes('@')){alert('❌ Enter valid email');return}
+    localStorage.setItem('sm_backupEmail',email);alert('✅ Email saved!');
 }
 
 // ===== INIT =====
@@ -1569,6 +1617,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('nameIn').addEventListener('keypress',e=>{if(e.key==='Enter')startApp()});
     updateLicenseInfo();
     if(S.wLearn>=100){const btn=document.getElementById('certBtn');if(btn)btn.disabled=false}
+    const savedEmail=localStorage.getItem('sm_backupEmail');
+    if(savedEmail){const e1=document.getElementById('backupEmail');if(e1)e1.value=savedEmail;const e2=document.getElementById('pBackupEmail');if(e2)e2.value=savedEmail}
     // Service Worker
     if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
     setInterval(saveCurrentProfile,30000);
