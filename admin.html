@@ -281,6 +281,23 @@ textarea.inp{resize:vertical;min-height:60px;font-family:inherit}
         </div>
     </div>
 
+    <!-- USERS TAB -->
+    <div id="tab-users" class="section hidden" style="padding:16px">
+        <div class="card">
+            <h2>👶 Users (Firebase)</h2>
+            <p style="font-size:.8rem;color:var(--txt2);margin-bottom:12px">Watoto wote wanaotumia SpellMaster Pro</p>
+            <div style="margin-bottom:12px">
+                <div style="font-size:.75rem;color:var(--txt2);margin-bottom:4px">Firebase Config:</div>
+                <input type="text" id="fbApiKey" placeholder="API Key" value="AIzaSyDatNJu54OvBcloosvrdTIi1ebxPRXprAQ" style="width:100%;padding:8px;border:1px solid var(--brd);border-radius:8px;margin-bottom:6px;font-size:.8rem">
+                <input type="text" id="fbProject" placeholder="Project ID" value="spellmaster-pro" style="width:100%;padding:8px;border:1px solid var(--brd);border-radius:8px;margin-bottom:6px;font-size:.8rem">
+                <button onclick="connectFirebase()" style="background:var(--ok);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.8rem">🔗 Connect</button>
+                <button onclick="loadUsers()" style="background:var(--pri);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;margin-left:6px">🔄 Refresh</button>
+            </div>
+            <div id="fbStatus" style="font-size:.8rem;margin-bottom:8px"></div>
+            <div id="usersList" style="font-size:.85rem;color:var(--txt2)">Bofya "🔗 Connect" ili kuona watoto wote</div>
+        </div>
+    </div>
+
     <div style="height:80px"></div>
     <div class="bottom-nav">
         <div class="nav-item act" onclick="showTab('keys')"><span class="nav-ic">🔑</span>Keys</div>
@@ -583,7 +600,7 @@ function showTab(name){
     document.querySelectorAll('.tab').forEach(t=>{if(t.textContent.toLowerCase().includes(name.substring(0,3)))t.classList.add('act')});
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('act'));
     const navItems=document.querySelectorAll('.nav-item');
-    const tabOrder=['keys','gen','settings','reports'];
+    const tabOrder=['keys','gen','settings','reports','users'];
     const idx=tabOrder.indexOf(name);
     if(idx>=0&&navItems[idx])navItems[idx].classList.add('act');
 }
