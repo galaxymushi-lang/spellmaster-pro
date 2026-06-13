@@ -500,10 +500,14 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 // ===== LICENSE KEY SYSTEM =====
-const ADMIN_SECRET = 'SPELLMASTER-ADMIN-2024';
+const _0x1a2b=['YWRtaW4yMDI0','c3BlbGxtYXN0ZXItYWRtaW4tMjAyNA=='];
+const _0x3c4d=_0x1a2b[0];const _0x5e6f=_0x1a2b[1];
+function _0x7g8h(s){return atob(s)}
+const ADMIN_PASS=_0x7g8h(_0x3c4d);
+const ADMIN_SECRET=_0x7g8h(_0x5e6f);
 
 function generateKey(days, adminPassword) {
-    if (adminPassword !== 'admin2024') return null;
+    if (adminPassword !== ADMIN_PASS) return null;
     const expiry = Date.now() + (days * 86400000);
     const raw = `${days}|${expiry}`;
     let hash = 0;
@@ -571,10 +575,10 @@ function resetLicense() {
 // ===== KEY GENERATOR (For Admin) =====
 function openKeyGen() {
     const pass = prompt('Enter admin password:');
-    if (pass !== 'admin2024') { alert('❌ Wrong password!'); return; }
+    if (pass !== ADMIN_PASS) { alert('❌ Wrong password!'); return; }
     const days = prompt('Enter license duration (days):', '30');
     if (!days) return;
-    const key = generateKey(parseInt(days), 'admin2024');
+    const key = generateKey(parseInt(days), ADMIN_PASS);
     const decoded = decodeKey(key);
     const expDate = new Date(decoded.expiry).toLocaleDateString();
     alert(`🔑 LICENSE KEY (valid ${days} days, expires ${expDate}):\n\n${key}\n\n📋 Copy this key and give it to the user.`);
