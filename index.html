@@ -38,6 +38,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 .dash-screen{background:var(--bg);padding-top:70px;justify-content:flex-start}
 .hdr{position:fixed;top:0;left:0;right:0;background:var(--pri);color:#fff;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;z-index:100}
 .hdr-t{font-size:1.1rem;font-weight:700}.hdr-pts{background:var(--warn);color:var(--txt);padding:3px 12px;border-radius:18px;font-weight:700;font-size:.85rem}
+.license-timer{background:rgba(255,255,255,.2);color:#fff;padding:3px 10px;border-radius:18px;font-size:.65rem;font-weight:600;cursor:pointer;animation:pulse 2s ease infinite;white-space:nowrap}
+.license-timer.urgent{background:rgba(255,107,107,.8);animation:flicker 1s ease infinite alternate}
 .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;width:100%;max-width:900px;padding:14px}
 .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 3px 10px rgba(0,0,0,.06);transition:.3s}
 .card:hover{transform:translateY(-2px)}.c-ic{font-size:2.2rem;margin-bottom:6px}.c-lb{font-size:.85rem;color:var(--txt2);margin-bottom:3px}.c-v{font-size:1.6rem;font-weight:800}
@@ -406,6 +408,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <div class="hdr">
         <div class="hdr-t"><span id="hMascot">🦉</span> SpellMaster</div>
         <div style="display:flex;align-items:center;gap:6px">
+            <span class="license-timer" id="licTimer" onclick="showScr('sett')" title="License time remaining">⏳ ...</span>
             <span style="font-size:.6rem;opacity:.7">Galactos</span>
             <button class="snd-tog" onclick="togSnd()" id="sndBtn">🔊</button>
             <button class="snd-tog" onclick="togTheme()" id="thmBtn">🌙</button>
@@ -1194,7 +1197,7 @@ function initDash(){
     document.getElementById('greet').innerHTML=`Hello, <span>${S.name}</span>! ${S.avatar}`;
     updStreak();updStats();updLvl();updMode();updCat();genCal();loadDaily();applyTheme();showWotd();drawChart();drawLB();
     document.getElementById('dlCount').textContent=S.downloadedWords.length;
-    showScr('dash');checkStreakReminder()}
+    showScr('dash');checkStreakReminder();startLicenseTimer()}
 
 function updStreak(){const t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();if(S.lastDt&&S.lastDt!==t&&S.lastDt!==y)S.strk=0;document.getElementById('streak').textContent=S.strk}
 function updStats(){
@@ -1552,6 +1555,36 @@ function updateLicenseInfo(){
     } else {
         div.innerHTML=`<p style="color:var(--sec)">❌ ${lic.reason==='expired'?'Expired':'No license'}</p>`;
     }
+}
+
+let licTimerInterval=null;
+function startLicenseTimer(){
+    if(licTimerInterval)clearInterval(licTimerInterval);
+    updateLicTimer();
+    licTimerInterval=setInterval(updateLicTimer,1000);
+}
+function updateLicTimer(){
+    const el=document.getElementById('licTimer');
+    if(!el)return;
+    const data=JSON.parse(localStorage.getItem('sm_license')||'{}');
+    if(!data.key){el.textContent='🔒 No License';el.className='license-timer urgent';return}
+    const decoded=decodeKey(data.key);
+    if(!decoded){el.textContent='🔒 Invalid Key';el.className='license-timer urgent';return}
+    const now=Date.now();
+    const diff=decoded.expiry-now;
+    if(diff<=0){el.textContent='⏰ Expired!';el.className='license-timer urgent';return}
+    const days=Math.floor(diff/86400000);
+    const hours=Math.floor((diff%86400000)/3600000);
+    const mins=Math.floor((diff%3600000)/60000);
+    const secs=Math.floor((diff%60000)/1000);
+    if(days>0){
+        el.textContent=`⏳ ${days}d ${hours}h ${mins}m ${secs}s`;
+    }else{
+        el.textContent=`⏳ ${hours}h ${mins}m ${secs}s`;
+    }
+    if(days<=1){el.className='license-timer urgent'}
+    else if(days<=3){el.className='license-timer urgent'}
+    else{el.className='license-timer'}
 }
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
 
