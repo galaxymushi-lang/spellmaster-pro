@@ -273,7 +273,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
     <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
     <p style="margin-top:15px;font-size:.75rem;opacity:.7;animation:fadeInUp 1.6s ease">Get your key from the app administrator</p>
-    <button class="btn btn-s" onclick="openKeyGen()" style="margin-top:15px;animation:fadeInUp 1.8s ease;font-size:.85rem">⚙️ Admin Panel</button>
+    <button class="btn btn-s" onclick="try{openKeyGen()}catch(e){alert('Error: '+e.message)}" style="margin-top:15px;animation:fadeInUp 1.8s ease;font-size:.85rem">⚙️ Admin Panel</button>
     <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
 </div>
 
@@ -864,7 +864,15 @@ function resetLicense() {
 
 // ===== KEY GENERATOR (For Admin) =====
 let generatedKeys=[];
-function openKeyGen(){showScr('admin')}
+function openKeyGen(){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+    document.getElementById('adminScreen').classList.remove('hidden');
+    document.getElementById('adminPassCard').classList.remove('hidden');
+    document.getElementById('adminKeyGen').classList.add('hidden');
+    document.getElementById('genKeyDisplay').classList.add('hidden');
+    if(document.getElementById('adminPassIn'))document.getElementById('adminPassIn').value='';
+    renderKeyHistory();
+}
 function closeKeyGen(){showScr('dash')}
 function verifyAdmin(){
     const pass=document.getElementById('adminPassIn').value;
