@@ -23,7 +23,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes floatItem{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-12px) rotate(5deg)}50%{transform:translateY(-6px) rotate(-3deg)}75%{transform:translateY(-15px) rotate(3deg)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 .welcome-sub{font-size:1.1rem;margin-bottom:20px;opacity:.9}
 .mascot-big{font-size:65px;margin-bottom:12px;animation:float 3s ease-in-out infinite}
@@ -1870,7 +1869,15 @@ document.addEventListener('DOMContentLoaded',()=>{
                 newWorker.addEventListener('statechange',()=>{
                     if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
                         if(confirm('🔄 New version available! Update now?')){newWorker.postMessage('skipWaiting');location.reload()}
-}
+                    }
+                });
+            });
+        }).catch(()=>{});
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
+    }
+    setInterval(saveCurrentProfile,30000);
+});
 
 // ===== ADMIN SETTINGS =====
 function adminTogSnd(){S.sett.snd=!S.sett.snd;document.getElementById('adminSndTog').classList.toggle('on',S.sett.snd);save()}
@@ -1935,14 +1942,6 @@ function loadAdminSettings(){
     const pinMsg=document.getElementById('pinChangeMsg');if(pinMsg)pinMsg.textContent='';
 }
 
-                });
-            });
-        }).catch(()=>{});
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
-    }
-    setInterval(saveCurrentProfile,30000);
-});
 </script>
 </body>
 </html>
