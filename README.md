@@ -1,82 +1,83 @@
-# 📚 SpellMaster Pro
+# SpellMaster Pro
 
-Interactive spelling app for kids with games, quizzes, pronunciation practice, and parent dashboard.
+A lightweight spelling practice application built for children. No frameworks, no dependencies — just a single HTML file.
 
-![License](https://img.shields.io/badge/license-proprietary-blue)
-![Version](https://img.shields.io/badge/version-1.0-green)
-![Platform](https://img.shields.io/badge/platform-web-lightgrey)
+[![HTML](https://img.shields.io/badge/HTML-100%25-orange)]()
+[![CSS](https://img.shields.io/badge/CSS-100%25-blue)]()
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)]()
+[![License](https://img.shields.io/badge/License-Proprietary-lightgrey)]()
 
-## 🎯 Features
+## Overview
 
-- 🎮 **8 Game Modes** - Listen, Sentence, Fill Blanks, Match, Speed Round, Quiz, Flashcards, Pronunciation
-- 🌍 **Swahili Translations** - Every word includes Swahili meaning
-- 📊 **Parent Dashboard** - Track child's progress
-- 🏆 **Trophy System** - 15 achievements to unlock
-- 🔥 **Streak Tracking** - Daily practice reminders
-- 🌙 **Dark Mode** - Easy on the eyes
-- 📱 **Mobile Friendly** - Works on any device
-- 🔌 **Offline Support** - Works without internet
+SpellMaster Pro helps children learn to spell through interactive listening exercises, quizzes, and games. Supports Swahili translations for bilingual learners.
 
-## 📦 Installation
+## Features
 
-1. Download the repository
-2. Open `index.html` in any web browser
-3. Enter your license key to activate
+- **8 Game Modes** — Listen, Sentence Completion, Fill in the Blanks, Word Matching, Speed Round, Quiz, Flashcards, and Pronunciation Practice
+- **120+ Words** across 7 categories with difficulty levels
+- **Swahili Translations** for every word
+- **Parent Dashboard** — track progress, accuracy, and practice time
+- **Trophy System** — 15 achievements to unlock
+- **Dark Mode**
+- **Responsive Design** — works on desktop and mobile
+- **Offline Support** — word database cached locally after first load
+- **License Key System** — configurable expiration for distribution control
 
-## 🔑 License Key System
+## Getting Started
 
-This app uses a license key system with expiry dates.
+### Option 1: Run Locally
 
-### Generate a Key (Admin)
-1. Open the app
-2. Click **⚙️ Admin** on the login screen
-3. Enter admin password: `admin2024`
-4. Set the number of days (e.g., 15 or 30)
-5. Copy the generated key
+1. Clone the repository
+   ```bash
+   git clone https://github.com/galaxymushi-lang/spellmaster-pro.git
+   ```
+2. Open `index.html` in any modern browser
+3. Enter a valid license key when prompted
 
-### Activate a Key (User)
-1. Enter the license key in the activation screen
-2. Click **Activate**
-3. Start learning!
+### Option 2: Download
 
-## 🎮 Game Modes
+1. Go to the [Releases](https://github.com/galaxymushi-lang/spellmaster-pro/releases) page
+2. Download the latest ZIP
+3. Extract and open `index.html`
 
-| Mode | Description |
-|------|-------------|
-| 🎧 Listen | Listen and type the word |
-| 📝 Sentence | Complete the sentence |
-| ✏️ Fill Blanks | Fill in missing letters |
-| 🔗 Match | Match words with meanings |
-| ⚡ Speed Round | Type as many words as possible |
-| ❓ Quiz | Multiple choice questions |
-| 🃏 Flashcards | Flip cards to learn words |
-| 🗣️ Pronunciation | Say the word correctly |
+## Usage
 
-## 📊 For Parents
+1. Launch `index.html` in your browser
+2. Enter your license key (provided by your administrator)
+3. Enter your name and select an avatar
+4. Choose a game mode and start practicing
 
-- View detailed progress reports
-- Track words learned and accuracy
-- Monitor daily practice time
-- Export progress reports
+## Project Structure
 
-## 🔧 Admin Settings
+```
+spellmaster-pro/
+├── index.html    # Complete application (HTML + CSS + JS)
+└── README.md
+```
 
-| Setting | Password |
-|---------|----------|
-| Generate License Key | `admin2024` |
+## Technical Details
 
-## 📁 Files
+- **No build step** — single-file application
+- **No external dependencies** — pure vanilla JavaScript
+- **Web Audio API** for sound effects (no audio files)
+- **Speech Synthesis API** for word pronunciation
+- **Web Speech API** for pronunciation validation
+- **localStorage** for data persistence
+- **Datamuse API** for online word fetching (optional)
 
-- `index.html` - Single file containing all HTML, CSS, and JavaScript
+## Browser Support
 
-## 🌐 Online Demo
+| Browser | Status |
+|---------|--------|
+| Chrome | Supported |
+| Firefox | Supported |
+| Safari | Supported |
+| Edge | Supported |
 
-Coming soon...
+## License
 
-## 📧 Contact
+Proprietary software. Unauthorized distribution is prohibited.
 
-For license keys or support: your-email@gmail.com
+## Author
 
-## 📄 License
-
-Proprietary. All rights reserved.
+**Galaxy Mushi** — [GitHub](https://github.com/galaxymushi-lang)
