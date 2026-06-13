@@ -761,6 +761,53 @@ function _0x7g8h(s){return atob(s)}
 const ADMIN_PASS=_0x7g8h(_0x3c4d);
 const ADMIN_SECRET=_0x7g8h(_0x5e6f);
 
+// ===== ADMIN FUNCTIONS (early definition) =====
+let generatedKeys=[];
+function openKeyGen(){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+    document.getElementById('adminScreen').classList.remove('hidden');
+    document.getElementById('adminPassCard').classList.remove('hidden');
+    document.getElementById('adminKeyGen').classList.add('hidden');
+    document.getElementById('genKeyDisplay').classList.add('hidden');
+    if(document.getElementById('adminPassIn'))document.getElementById('adminPassIn').value='';
+    renderKeyHistory();
+}
+function closeKeyGen(){showScr('dash')}
+function verifyAdmin(){
+    const pass=document.getElementById('adminPassIn').value;
+    if(pass!==ADMIN_PASS){alert('❌ Wrong password!');return;}
+    document.getElementById('adminPassCard').classList.add('hidden');
+    document.getElementById('adminKeyGen').classList.remove('hidden');
+}
+function generateKeyBtn(){
+    const days = parseInt(document.getElementById('keyDaysIn').value);
+    if(!days||days<1){alert('Enter valid days');return;}
+    const key = generateKey(days, ADMIN_PASS);
+    const decoded = decodeKey(key);
+    const expDate = new Date(decoded.expiry).toLocaleDateString();
+    document.getElementById('genKeyText').textContent=key;
+    document.getElementById('genKeyInfo').innerHTML=`Expires: <strong>${expDate}</strong> | Duration: <strong>${days} days</strong>`;
+    document.getElementById('genKeyDisplay').classList.remove('hidden');
+    generatedKeys.push({key,days,expDate,created:new Date().toLocaleDateString()});
+    renderKeyHistory();
+}
+function copyGenKey(){
+    const key=document.getElementById('genKeyText').textContent;
+    navigator.clipboard.writeText(key).then(()=>{alert('✅ Key copied!')}).catch(()=>{const t=document.createElement('textarea');t.value=key;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('✅ Key copied!')});
+}
+function renderKeyHistory(){
+    const g=document.getElementById('keyHistory');
+    if(!g)return;
+    if(generatedKeys.length===0){g.innerHTML='No keys generated yet';return}
+    g.innerHTML='';
+    generatedKeys.slice(-5).reverse().forEach(k=>{
+        const d=document.createElement('div');
+        d.style.cssText='padding:6px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;font-size:.75rem';
+        d.innerHTML=`<span>${k.key.substring(0,15)}...</span><span>${k.days}d | ${k.expDate}</span>`;
+        g.appendChild(d);
+    });
+}
+
 function getDeviceFingerprint(){
     const c=document.createElement('canvas');
     const ctx=c.getContext('2d');
@@ -860,53 +907,6 @@ function getDaysLeft() {
 
 function resetLicense() {
     localStorage.removeItem('sm_license');
-}
-
-// ===== KEY GENERATOR (For Admin) =====
-let generatedKeys=[];
-function openKeyGen(){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
-    document.getElementById('adminScreen').classList.remove('hidden');
-    document.getElementById('adminPassCard').classList.remove('hidden');
-    document.getElementById('adminKeyGen').classList.add('hidden');
-    document.getElementById('genKeyDisplay').classList.add('hidden');
-    if(document.getElementById('adminPassIn'))document.getElementById('adminPassIn').value='';
-    renderKeyHistory();
-}
-function closeKeyGen(){showScr('dash')}
-function verifyAdmin(){
-    const pass=document.getElementById('adminPassIn').value;
-    if(pass!==ADMIN_PASS){alert('❌ Wrong password!');return;}
-    document.getElementById('adminPassCard').classList.add('hidden');
-    document.getElementById('adminKeyGen').classList.remove('hidden');
-}
-function generateKeyBtn(){
-    const days = parseInt(document.getElementById('keyDaysIn').value);
-    if(!days||days<1){alert('Enter valid days');return;}
-    const key = generateKey(days, ADMIN_PASS);
-    const decoded = decodeKey(key);
-    const expDate = new Date(decoded.expiry).toLocaleDateString();
-    document.getElementById('genKeyText').textContent=key;
-    document.getElementById('genKeyInfo').innerHTML=`Expires: <strong>${expDate}</strong> | Duration: <strong>${days} days</strong>`;
-    document.getElementById('genKeyDisplay').classList.remove('hidden');
-    generatedKeys.push({key,days,expDate,created:new Date().toLocaleDateString()});
-    renderKeyHistory();
-    pSnd('star');
-}
-function copyGenKey(){
-    const key=document.getElementById('genKeyText').textContent;
-    navigator.clipboard.writeText(key).then(()=>{alert('✅ Key copied!')}).catch(()=>{const t=document.createElement('textarea');t.value=key;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('✅ Key copied!')});
-}
-function renderKeyHistory(){
-    const g=document.getElementById('keyHistory');
-    if(generatedKeys.length===0){g.innerHTML='No keys generated yet';return}
-    g.innerHTML='';
-    generatedKeys.slice(-5).reverse().forEach(k=>{
-        const d=document.createElement('div');
-        d.style.cssText='padding:6px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;font-size:.75rem';
-        d.innerHTML=`<span>${k.key.substring(0,15)}...</span><span>${k.days}d | ${k.expDate}</span>`;
-        g.appendChild(d);
-    });
 }
 
 // ===== STATE =====
@@ -1643,19 +1643,20 @@ function saveParentEmail(){
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
-    const lic=checkLicense();
-    if(!lic.valid){
-        document.getElementById('welcomeScreen').classList.add('hidden');
-        document.getElementById('licenseScreen').classList.remove('hidden');
-        if(lic.reason==='expired'){
-            document.getElementById('licenseMsg').style.color='var(--sec)';
-            document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
-        } else if(lic.reason==='device_mismatch'){
-            document.getElementById('licenseMsg').style.color='var(--sec)';
-            document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
-        }
-        return;
-    }
+    // License check disabled for now
+    // const lic=checkLicense();
+    // if(!lic.valid){
+    //     document.getElementById('welcomeScreen').classList.add('hidden');
+    //     document.getElementById('licenseScreen').classList.remove('hidden');
+    //     if(lic.reason==='expired'){
+    //         document.getElementById('licenseMsg').style.color='var(--sec)';
+    //         document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
+    //     } else if(lic.reason==='device_mismatch'){
+    //         document.getElementById('licenseMsg').style.color='var(--sec)';
+    //         document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
+    //     }
+    //     return;
+    // }
     const loaded=load();
     initTimeLimit();
     if(loaded&&S.rememberMe&&S.lastUser){
