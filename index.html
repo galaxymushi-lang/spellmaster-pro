@@ -279,7 +279,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
     <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase;animation:fadeInUp 1.2s ease" onkeypress="if(event.key==='Enter')activateBtn()">
     <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
     <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
-    <p style="margin-top:20px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
+    <p style="margin-top:16px;font-size:.75rem;color:var(--txt2);animation:fadeInUp 1.6s ease">Need a key? Contact <a href="mailto:galaxymushizo@gmail.com" style="color:var(--pri);text-decoration:underline">galaxymushizo@gmail.com</a></p>
+    <p style="margin-top:12px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
 </div>
 
 <!-- Profile Selection -->
@@ -712,7 +713,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
             <div style="font-size:.8rem;color:var(--txt2)" id="licenseInfoDiv">
                 <p>Loading license info...</p>
             </div>
-            <button class="btn btn-s btn-sm" style="background:var(--sec);margin-top:5px" onclick="openKeyGen()">⚙️ Admin Panel</button>
         </div>
         <div class="sett-item"><span class="sett-lb">🗑️ Reset</span><button class="btn btn-no btn-sm" onclick="resetAll()">Reset</button></div>
     </div>
@@ -728,233 +728,59 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </div>
 <div id="starsC" class="stars-c"></div>
 
-<!-- Admin Screen -->
-<div id="adminScreen" class="screen dash-screen hidden">
-    <div class="hdr">
-        <button class="back-btn" onclick="closeKeyGen()" style="color:#fff">←</button>
-        <div class="hdr-t">🔐 Admin Panel</div>
-        <div></div>
-    </div>
-    <div style="padding:20px;width:100%;max-width:500px">
-        <div class="card" style="text-align:center;margin-bottom:16px">
-            <div style="font-size:3rem;margin-bottom:8px">🔑</div>
-            <h2 style="margin:0;font-size:1.3rem;color:var(--pri)">License Key Generator</h2>
-            <p style="font-size:.8rem;color:var(--txt2);margin-top:4px">From Galactos Group</p>
-        </div>
-
-        <div class="card" id="adminPassCard">
-            <h3 style="margin:0 0 12px;font-size:1rem">🔐 Enter Admin Password</h3>
-            <input type="password" id="adminPassIn" class="nm-in" placeholder="Password..." onkeypress="if(event.key==='Enter')verifyAdmin()" style="width:100%;margin-bottom:10px">
-            <button class="btn btn-p" style="width:100%" onclick="verifyAdmin()">Verify ✅</button>
-            <p id="adminLoginMsg" style="font-size:.8rem;margin-top:8px;min-height:18px;text-align:center"></p>
-        </div>
-
-        <div class="card hidden" id="adminKeyGen">
-            <h3 style="margin:0 0 12px;font-size:1rem">🗓️ Generate New Key</h3>
-            <p style="font-size:.85rem;color:var(--txt2);margin-bottom:10px">How many days should this key be valid?</p>
-            <div style="display:flex;gap:8px;margin-bottom:12px">
-                <button class="btn btn-s btn-sm" onclick="document.getElementById('keyDaysIn').value=7">7 days</button>
-                <button class="btn btn-s btn-sm" onclick="document.getElementById('keyDaysIn').value=15">15 days</button>
-                <button class="btn btn-s btn-sm" onclick="document.getElementById('keyDaysIn').value=30">30 days</button>
-                <button class="btn btn-s btn-sm" onclick="document.getElementById('keyDaysIn').value=90">90 days</button>
-            </div>
-            <input type="number" id="keyDaysIn" class="nm-in" value="30" min="1" max="365" style="width:100%;margin-bottom:10px;text-align:center;font-size:1.2rem">
-            <button class="btn btn-p" style="width:100%" onclick="generateKeyBtn()">Generate Key 🔑</button>
-        </div>
-
-        <div class="card hidden" id="genKeyDisplay">
-            <h3 style="margin:0 0 8px;font-size:1rem">📋 Generated Key</h3>
-            <div id="genKeyText" style="background:var(--bg);padding:12px;border-radius:8px;font-family:monospace;font-size:.9rem;word-break:break-all;cursor:pointer;border:2px dashed var(--pri);margin-bottom:8px" onclick="copyGenKey()" title="Click to copy"></div>
-            <p id="genKeyInfo" style="font-size:.8rem;color:var(--txt2)"></p>
-            <button class="btn btn-ok btn-sm" onclick="copyGenKey()">📋 Copy Key</button>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-            <h3 style="margin:0 0 8px;font-size:1rem">📊 Generated Keys</h3>
-            <div id="keyHistory" style="font-size:.8rem;color:var(--txt2)">No keys generated yet</div>
-        </div>
-
-        <div class="card hidden" style="margin-top:16px" id="adminSettingsCard">
-            <h3 style="margin:0 0 12px;font-size:1rem">⚙️ App Settings</h3>
-            <div class="sett-item"><span class="sett-lb">🔊 Sound</span><div class="tog on" id="adminSndTog" onclick="adminTogSnd()"></div></div>
-            <div class="sett-item"><span class="sett-lb">🌙 Dark Mode</span><div class="tog" id="adminDkTog" onclick="adminTogDk()"></div></div>
-            <div class="sett-item"><span class="sett-lb">💡 Hints</span><div class="tog" id="adminHntTog" onclick="adminTogHints()"></div></div>
-            <div class="sett-item"><span class="sett-lb">🎨 Theme</span>
-                <select id="adminThemeSel" onchange="adminSetTheme(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
-                    <option value="light">Default</option><option value="dark">Dark</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="sunset">Sunset</option><option value="candy">Candy</option><option value="midnight">Midnight</option>
-                </select>
-            </div>
-            <div class="sett-item"><span class="sett-lb">⏰ Time Limit</span>
-                <select id="adminTimeSel" onchange="adminSetTime(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
-                    <option value="0">No limit</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option>
-                </select>
-            </div>
-            <div class="sett-item"><span class="sett-lb">🌐 Language</span>
-                <select id="adminLangSel" onchange="adminSetLang(this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);color:var(--txt)">
-                    <option value="en">English</option><option value="sw">Kiswahili</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-            <h3 style="margin:0 0 12px;font-size:1rem">🔐 Passwords & Security</h3>
-            <div style="margin-bottom:12px">
-                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Change Admin Password:</p>
-                <div style="font-size:.75rem;color:var(--txt2);margin-bottom:6px">Current: <strong id="curAdminPassStatus">Default (admin2024)</strong></div>
-                <input type="password" id="newAdminPassIn" class="nm-in" placeholder="New admin password" style="width:100%;margin-bottom:6px;font-size:.85rem">
-                <input type="password" id="confirmAdminPassIn" class="nm-in" placeholder="Confirm new password" style="width:100%;margin-bottom:6px;font-size:.85rem">
-                <button class="btn btn-s btn-sm" onclick="changeAdminPass()" style="width:100%">🔑 Change Admin Password</button>
-                <p id="passChangeMsg" style="font-size:.8rem;margin-top:6px;min-height:18px;text-align:center"></p>
-            </div>
-            <div style="margin-bottom:12px">
-                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Parent PIN (4 digits):</p>
-                <div style="font-size:.75rem;color:var(--txt2);margin-bottom:6px">Current: <strong id="curPinStatus">Haina PIN</strong></div>
-                <div style="display:flex;gap:6px">
-                    <input type="password" id="adminPinIn" class="nm-in" style="width:80px;font-size:1rem" placeholder="****" maxlength="4">
-                    <button class="btn btn-s btn-sm" onclick="adminSetPin()">Set PIN</button>
-                    <button class="btn btn-no btn-sm" onclick="clearParentPin()">Clear</button>
-                </div>
-                <p id="pinChangeMsg" style="font-size:.8rem;margin-top:6px;min-height:18px;text-align:center"></p>
-            </div>
-            <div>
-                <p style="font-size:.8rem;color:var(--txt2);margin-bottom:6px">Device & License Info:</p>
-                <div style="font-size:.75rem;color:var(--txt2);background:var(--bg);padding:8px;border-radius:8px">
-                    <div>Device ID: <code id="deviceIdDisp">...</code></div>
-                    <div id="licenseStatusDisp"></div>
-                </div>
-            </div>
-            <div style="margin-top:12px">
-                <button class="btn btn-no btn-sm" onclick="adminReset()" style="width:100%">🗑️ Reset ALL Data</button>
-            </div>
-        </div>
-    </div>
-    <div style="height:65px"></div>
-</div>
-
 <script>
-// ===== LICENSE KEY SYSTEM =====
-const _0x1a2b=['YWRtaW4yMDI0','c3BlbGxtYXN0ZXItYWRtaW4tMjAyNA=='];
-const _0x3c4d=_0x1a2b[0];const _0x5e6f=_0x1a2b[1];
-function _0x7g8h(s){return atob(s)}
-const ADMIN_PASS=_0x7g8h(_0x3c4d);
-const ADMIN_SECRET=_0x7g8h(_0x5e6f);
-
-// ===== FIREBASE CONFIG =====
-// REPLACE with your Firebase config from https://console.firebase.google.com
+// ===== LOCAL STORAGE =====
 const FB_CONFIG={
   apiKey: "AIzaSyDatNJu54OvBcloosvrdTIi1ebxPRXprAQ",
-  authDomain: "spellmaster-pro.firebaseapp.com",
   projectId: "spellmaster-pro",
-  storageBucket: "spellmaster-pro.firebasestorage.app",
-  messagingSenderId: "572636246995",
-  appId: "1:572636246995:web:4a3bd678a6e12f3455f526",
-  measurementId: "G-7LZNSVDLD8"
 };
+// Firebase is optional - only works if Firestore is enabled with public rules
 let fbDb=null;
+let fbInitAttempted=0;
 function initFirebase(){
+    if(fbDb||fbInitAttempted>=3)return;
+    fbInitAttempted++;
     try{
-        if(FB_CONFIG.apiKey&&FB_CONFIG.apiKey!=='YOUR_API_KEY'){
-            firebase.initializeApp(FB_CONFIG);
+        if(FB_CONFIG.apiKey&&FB_CONFIG.apiKey!=='YOUR_API_KEY'&&typeof firebase!=='undefined'){
+            if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);
             fbDb=firebase.firestore();
-            console.log('Firebase connected');
+            console.log('✅ Firebase connected');
+            syncToFirebase();
+            syncLicenseBinding();
         }
-    }catch(e){console.warn('Firebase init failed:',e.message)}
+    }catch(e){console.warn('Firebase unavailable:',e.message);fbDb=null}
 }
 function syncToFirebase(){
     if(!fbDb||!S.name)return;
-    const uid=S.name.toLowerCase().replace(/[^a-z0-9]/g,'_');
-    fbDb.collection('users').doc(uid).set({
-        name:S.name,avatar:S.avatar,pts:S.pts,lvl:S.lvl,
-        wLearn:S.wLearn,tCorr:S.tCorr,tAtt:S.tAtt,
-        strk:S.strk,pMin:S.pMin,
-        trophies:S.trophies.length,
-        lastSeen:new Date().toISOString(),
-        device:getDeviceFingerprint()
-    },{merge:true}).catch(e=>console.warn('Firebase sync failed:',e.message));
+    try{
+        const uid=S.name.toLowerCase().replace(/[^a-z0-9]/g,'_');
+        fbDb.collection('users').doc(uid).set({
+            name:S.name,avatar:S.avatar,pts:S.pts,lvl:S.lvl,
+            wLearn:S.wLearn,tCorr:S.tCorr,tAtt:S.tAtt,
+            strk:S.strk,pMin:S.pMin,
+            trophies:S.trophies.length,
+            lastSeen:new Date().toISOString(),
+            device:getDeviceFingerprint()
+        },{merge:true}).then(()=>{
+            if(!window._fbSynced){window._fbSynced=true;console.log('✅ User synced to Firebase')}
+        }).catch(e=>console.warn('Firebase sync:',e.message));
+    }catch(e){console.warn('Firebase sync err:',e.message)}
 }
-function loadFromFirebase(){
+function syncLicenseBinding(){
     if(!fbDb)return;
-    fbDb.collection('users').orderBy('lastSeen','desc').limit(50).get()
-    .then(snap=>{
-        const users=[];
-        snap.forEach(doc=>users.push(doc.data()));
-        localStorage.setItem('sm_fb_users',JSON.stringify(users));
-    }).catch(e=>console.warn('Firebase load failed:',e.message));
+    const lic=JSON.parse(localStorage.getItem('sm_license')||'{}');
+    if(!lic.key||!lic.deviceId)return;
+    const keyId=lic.key.replace(/[^a-zA-Z0-9]/g,'_');
+    fbDb.collection('licenseActivations').doc(keyId).set({
+        key:lic.key,deviceId:lic.deviceId,activatedAt:lic.activatedAt||new Date().toISOString()
+    },{merge:true}).catch(e=>console.warn('License sync:',e.message));
 }
-
-// ===== ADMIN FUNCTIONS (early definition) =====
-var generatedKeys=[];
-function openKeyGen(){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
-    document.getElementById('adminScreen').classList.remove('hidden');
-    const pc=document.getElementById('adminPassCard');
-    const kg=document.getElementById('adminKeyGen');
-    const gd=document.getElementById('genKeyDisplay');
-    const sc=document.getElementById('adminSettingsCard');
-    if(pc)pc.classList.remove('hidden');
-    if(kg)kg.classList.add('hidden');
-    if(gd)gd.classList.add('hidden');
-    if(sc)sc.classList.add('hidden');
-    const pi=document.getElementById('adminPassIn');
-    if(pi)pi.value='';
-    const lm=document.getElementById('adminLoginMsg');
-    if(lm){lm.textContent='';lm.style.color=''}
-    renderKeyHistory();
-}
-function closeKeyGen(){
-    const lic=checkLicense();
-    if(lic.valid){
-        const loaded=load();
-        if(loaded&&S.lastUser){initDash()}else{showScr('welcome')}
-    }else{
-        document.getElementById('adminScreen').classList.add('hidden');
-        document.getElementById('licenseScreen').classList.remove('hidden');
-    }
-}
-function verifyAdmin(){
-    const pass=document.getElementById('adminPassIn').value;
-    const msg=document.getElementById('adminLoginMsg');
-    const expected=getAdminPass();
-    if(pass!==expected){
-        msg.textContent='❌ Nywila si sahihi! (Umeingiza: '+pass.length+' herufi)';
-        msg.style.color='#ff6b6b';
-        document.getElementById('adminPassIn').value='';
-        document.getElementById('adminPassIn').focus();
-        return;
-    }
-    msg.textContent='✅ Nywila ni sahihi!';
-    msg.style.color='#4ECB71';
-    document.getElementById('adminPassCard').classList.add('hidden');
-    document.getElementById('adminKeyGen').classList.remove('hidden');
-    document.getElementById('adminSettingsCard').classList.remove('hidden');
-    loadAdminSettings();
-}
-function generateKeyBtn(){
-    const days = parseInt(document.getElementById('keyDaysIn').value);
-    if(!days||days<1){alert('Enter valid days');return;}
-    const key = generateKey(days, ADMIN_PASS);
-    const decoded = decodeKey(key);
-    const expDate = new Date(decoded.expiry).toLocaleDateString();
-    document.getElementById('genKeyText').textContent=key;
-    document.getElementById('genKeyInfo').innerHTML=`Expires: <strong>${expDate}</strong> | Duration: <strong>${days} days</strong>`;
-    document.getElementById('genKeyDisplay').classList.remove('hidden');
-    generatedKeys.push({key,days,expDate,created:new Date().toLocaleDateString()});
-    renderKeyHistory();
-}
-function copyGenKey(){
-    const key=document.getElementById('genKeyText').textContent;
-    navigator.clipboard.writeText(key).then(()=>{alert('✅ Key copied!')}).catch(()=>{const t=document.createElement('textarea');t.value=key;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('✅ Key copied!')});
-}
-function renderKeyHistory(){
-    const g=document.getElementById('keyHistory');
-    if(!g)return;
-    if(generatedKeys.length===0){g.innerHTML='No keys generated yet';return}
-    g.innerHTML='';
-    generatedKeys.slice(-5).reverse().forEach(k=>{
-        const d=document.createElement('div');
-        d.style.cssText='padding:6px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;font-size:.75rem';
-        d.innerHTML=`<span>${k.key.substring(0,15)}...</span><span>${k.days}d | ${k.expDate}</span>`;
-        g.appendChild(d);
+function checkFirebaseBinding(key){
+    return new Promise(resolve=>{
+        if(!fbDb){resolve(null);return}
+        fbDb.collection('licenseActivations').doc(key.replace(/[^a-zA-Z0-9]/g,'_')).get()
+        .then(doc=>resolve(doc.exists?doc.data():null))
+        .catch(()=>resolve(null));
     });
 }
 
@@ -982,20 +808,6 @@ function getDeviceFingerprint(){
         hash|=0;
     }
     return Math.abs(hash).toString(36);
-}
-
-function generateKey(days, adminPassword) {
-    if (adminPassword !== ADMIN_PASS) return null;
-    const expiry = Date.now() + (days * 86400000);
-    const raw = `${days}|${expiry}`;
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-        hash |= 0;
-    }
-    const sig = Math.abs(hash).toString(36).toUpperCase();
-    const enc = btoa(raw);
-    return `SM-${enc}-${sig}`;
 }
 
 function decodeKey(key) {
@@ -1028,26 +840,39 @@ function checkLicense() {
         const daysUsed = Math.floor((Date.now() - (decoded.expiry - decoded.days * 86400000)) / 86400000);
         return { valid: false, reason: 'expired', days: daysUsed };
     }
-    if (data.deviceId) {
-        const currentDevice = getDeviceFingerprint();
-        if (data.deviceId !== currentDevice) {
-            return { valid: false, reason: 'device_mismatch' };
-        }
+    const currentDevice = getDeviceFingerprint();
+    // Check activated keys list
+    const activated = JSON.parse(localStorage.getItem('sm_activated_keys') || '{}');
+    if (activated[data.key] && activated[data.key] !== currentDevice) {
+        return { valid: false, reason: 'device_mismatch' };
+    }
+    if (data.deviceId && data.deviceId !== currentDevice) {
+        return { valid: false, reason: 'device_mismatch' };
     }
     const daysLeft = Math.ceil((decoded.expiry - Date.now()) / 86400000);
     return { valid: true, daysLeft, totalDays: decoded.days };
 }
 
 function activateKey(key) {
-    const decoded = decodeKey(key);
-    if (!decoded) return false;
-    if (Date.now() > decoded.expiry) return false;
-    const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
-    const deviceId = getDeviceFingerprint();
-    if (existing.key && existing.deviceId && existing.deviceId !== deviceId) return false;
-    const data = { key, activatedAt: new Date().toISOString(), deviceId };
-    localStorage.setItem('sm_license', JSON.stringify(data));
-    return true;
+    return new Promise(resolve=>{
+        const decoded = decodeKey(key);
+        if (!decoded) return resolve(false);
+        if (Date.now() > decoded.expiry) return resolve(false);
+        const deviceId = getDeviceFingerprint();
+        const activated = JSON.parse(localStorage.getItem('sm_activated_keys') || '{}');
+        if (activated[key] && activated[key] !== deviceId) return resolve(false);
+        activated[key] = deviceId;
+        localStorage.setItem('sm_activated_keys', JSON.stringify(activated));
+        const data = { key, activatedAt: new Date().toISOString(), deviceId };
+        localStorage.setItem('sm_license', JSON.stringify(data));
+        if(fbDb){
+            const keyId=key.replace(/[^a-zA-Z0-9]/g,'_');
+            fbDb.collection('licenseActivations').doc(keyId).set({
+                key, deviceId, activatedAt: data.activatedAt
+            },{merge:true}).catch(e=>console.warn('License sync:',e.message));
+        }
+        resolve(true);
+    });
 }
 
 function getDaysLeft() {
@@ -1206,7 +1031,8 @@ function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.p
 
 // ===== LICENSE ACTIVATION =====
 function activateBtn() {
-    const key = document.getElementById('licenseKeyIn').value.trim();
+    const raw = document.getElementById('licenseKeyIn').value.trim();
+    const key = raw.substring(0, 3).toUpperCase() + raw.substring(3);
     const msg = document.getElementById('licenseMsg');
     
     if (!key) {
@@ -1214,22 +1040,25 @@ function activateBtn() {
         return;
     }
     
-    if (activateKey(key)) {
-        msg.style.color = 'var(--ok)';
-        msg.textContent = '✅ License activated!';
-        setTimeout(() => {
-            document.getElementById('licenseScreen').classList.add('hidden');
-            document.getElementById('welcomeScreen').classList.remove('hidden');
-        }, 800);
-    } else {
-        msg.style.color = 'var(--sec)';
-        const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
-        if (existing.key && existing.key !== key) {
-            msg.textContent = '❌ This key is already used on another device!';
+    msg.textContent = '⏳ Checking license...';
+    activateKey(key).then(ok=>{
+        if (ok) {
+            msg.style.color = 'var(--ok)';
+            msg.textContent = '✅ License activated!';
+            setTimeout(() => {
+                document.getElementById('licenseScreen').classList.add('hidden');
+                document.getElementById('welcomeScreen').classList.remove('hidden');
+            }, 800);
         } else {
-            msg.textContent = '❌ Invalid or expired key. Contact admin.';
+            msg.style.color = 'var(--sec)';
+            const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
+            if (existing.key && existing.key !== key) {
+                msg.textContent = '❌ This key is already used on another device!';
+            } else {
+                msg.textContent = '❌ Invalid or expired key. Contact admin.';
+            }
         }
-    }
+    });
 }
 
 // ===== APP =====
@@ -1247,7 +1076,7 @@ function initDash(){
     document.getElementById('greet').innerHTML=`Hello, <span>${S.name}</span>! ${S.avatar}`;
     updStreak();updStats();updLvl();updMode();updCat();genCal();loadDaily();applyTheme();showWotd();drawChart();drawLB();
     document.getElementById('dlCount').textContent=S.downloadedWords.length;
-    showScr('dash');checkStreakReminder();startLicenseTimer()}
+    showScr('dash');checkStreakReminder();startLicenseTimer();syncToFirebase()}
 
 function updStreak(){const t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();if(S.lastDt&&S.lastDt!==t&&S.lastDt!==y)S.strk=0;document.getElementById('streak').textContent=S.strk}
 function updStats(){
@@ -1643,7 +1472,7 @@ function updateLicTimer(){
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
 
 // ===== NAVIGATION =====
-function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen',profile:'profileScreen',pin:'pinScreen',cert:'certScreen',report:'reportScreen',admin:'adminScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB();initTimeLimit()}if(sc==='admin'){document.getElementById('adminPassCard').classList.remove('hidden');document.getElementById('adminKeyGen').classList.add('hidden');document.getElementById('adminSettingsCard').classList.add('hidden');document.getElementById('genKeyDisplay').classList.add('hidden');document.getElementById('adminPassIn').value='';renderKeyHistory()}}
+function showScr(sc){document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));const m={welcome:'welcomeScreen',dash:'dashScreen',prac:'pracScreen',res:'resScreen',trophy:'trophyScreen',parent:'parentScreen',sett:'settScreen',profile:'profileScreen',pin:'pinScreen',cert:'certScreen',report:'reportScreen'};if(m[sc])document.getElementById(m[sc]).classList.remove('hidden');if(sc==='dash'){updStats();updLvl();genCal();updMode();drawChart();drawLB();initTimeLimit()}}
 function goBack(){clearInterval(S.tmrInt);showScr('dash');speechSynthesis.cancel()}
 
 // ===== CELEBRATIONS =====
@@ -1934,69 +1763,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     setInterval(saveCurrentProfile,30000);
 });
-
-// ===== ADMIN SETTINGS =====
-function adminTogSnd(){S.sett.snd=!S.sett.snd;document.getElementById('adminSndTog').classList.toggle('on',S.sett.snd);save()}
-function adminTogDk(){S.sett.dk=!S.sett.dk;document.getElementById('adminDkTog').classList.toggle('on',S.sett.dk);applyTheme();save()}
-function adminTogHints(){S.sett.hints=!S.sett.hints;document.getElementById('adminHntTog').classList.toggle('on',S.sett.hints);save()}
-function adminSetTheme(t){S.sett.theme=t;if(t!=='dark'&&t!=='midnight')S.sett.dk=false;applyTheme();save()}
-function adminSetTime(v){localStorage.setItem('sm_timeLimit',v);initTimeLimit()}
-function adminSetLang(l){S.sett.lang=l;save();updateLang()}
-function adminSetPin(){
-    const msg=document.getElementById('pinChangeMsg');
-    const pin=document.getElementById('adminPinIn').value.trim();
-    if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){msg.textContent='⚠️ Weka nambari 4 tu!';msg.style.color='#ff6b6b';return}
-    localStorage.setItem('sm_pin',pin);
-    document.getElementById('adminPinIn').value='';
-    document.getElementById('curPinStatus').textContent='Imewekwa';
-    msg.textContent='✅ PIN imepangwa! Itatumika kufungua settings/parent.';
-    msg.style.color='#4ECB71';
-}
-function clearParentPin(){
-    const msg=document.getElementById('pinChangeMsg');
-    if(!localStorage.getItem('sm_pin')){msg.textContent='⚠️ Hakuna PIN ya kufuta';msg.style.color='#ff6b6b';return}
-    localStorage.removeItem('sm_pin');
-    document.getElementById('curPinStatus').textContent='Haina PIN';
-    msg.textContent='✅ PIN imefutwa!';
-    msg.style.color='#4ECB71';
-}
-function changeAdminPass(){
-    const msg=document.getElementById('passChangeMsg');
-    const newPass=document.getElementById('newAdminPassIn').value.trim();
-    const conf=document.getElementById('confirmAdminPassIn').value.trim();
-    if(!newPass||newPass.length<4){msg.textContent='⚠️ Password lazima iwe na herufi 4 au zaidi';msg.style.color='#ff6b6b';return}
-    if(newPass!==conf){msg.textContent='⚠️ Password hazifanani!';msg.style.color='#ff6b6b';return}
-    localStorage.setItem('sm_adminPass',btoa(newPass));
-    document.getElementById('newAdminPassIn').value='';
-    document.getElementById('confirmAdminPassIn').value='';
-    document.getElementById('curAdminPassStatus').textContent='Custom (imebadilishwa)';
-    msg.textContent='✅ Password imebadilishwa! Itatumika ujao.';
-    msg.style.color='#4ECB71';
-}
-function adminReset(){if(confirm('⚠️ Reset ALL data? This cannot be undone!')){localStorage.clear();location.reload()}}
-function getAdminPass(){
-    const saved=localStorage.getItem('sm_adminPass');
-    return saved?atob(saved):ADMIN_PASS;
-}
-function loadAdminSettings(){
-    document.getElementById('adminSndTog').classList.toggle('on',S.sett.snd);
-    document.getElementById('adminDkTog').classList.toggle('on',S.sett.dk);
-    document.getElementById('adminHntTog').classList.toggle('on',S.sett.hints);
-    if(document.getElementById('adminThemeSel'))document.getElementById('adminThemeSel').value=S.sett.theme||'light';
-    if(document.getElementById('adminLangSel'))document.getElementById('adminLangSel').value=S.sett.lang||'en';
-    const tl=localStorage.getItem('sm_timeLimit')||'0';
-    if(document.getElementById('adminTimeSel'))document.getElementById('adminTimeSel').value=tl;
-    const devEl=document.getElementById('deviceIdDisp');
-    if(devEl)devEl.textContent=getDeviceFingerprint();
-    const licEl=document.getElementById('licenseStatusDisp');
-    if(licEl){const lic=checkLicense();licEl.innerHTML=lic.valid?'<div style="color:var(--ok)">✅ License active ('+lic.daysLeft+' days left)</div>':'<div style="color:var(--sec)">❌ '+lic.reason+'</div>'}
-    const passSt=document.getElementById('curAdminPassStatus');
-    if(passSt){passSt.textContent=localStorage.getItem('sm_adminPass')?'Custom (imebadilishwa)':'Default (admin2024)'}
-    const passMsg=document.getElementById('passChangeMsg');if(passMsg)passMsg.textContent='';
-    const pinSt=document.getElementById('curPinStatus');
-    if(pinSt){pinSt.textContent=localStorage.getItem('sm_pin')?'Imewekwa':'Haina PIN'}
-    const pinMsg=document.getElementById('pinChangeMsg');if(pinMsg)pinMsg.textContent='';
-}
 
 </script>
 </body>

@@ -4,20 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SpellMaster Pro - Admin Panel</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
 // ===== FIREBASE USERS =====
+const FB_API_KEY="AIzaSyDatNJu54OvBcloosvrdTIi1ebxPRXprAQ";
+const FB_PROJECT_ID="spellmaster-pro";
 let fbDb=null;
 function connectFirebase(){
-    const apiKey=document.getElementById("fbApiKey").value.trim();
-    const projectId=document.getElementById("fbProject").value.trim();
-    if(!apiKey||!projectId){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>⚠️ Weka API Key na Project ID</span>";return}
+    const apiKey=document.getElementById("fbApiKey").value.trim()||FB_API_KEY;
+    const projectId=document.getElementById("fbProject").value.trim()||FB_PROJECT_ID;
+    if(!apiKey||!projectId){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>&#x26A0;&#xFE0F; Weka API Key na Project ID</span>";return}
     try{
-        firebase.initializeApp({apiKey:apiKey,projectId:projectId,storageBucket:projectId+".appspot.com"});
-        fbDb=firebase.firestore();
-        document.getElementById("fbStatus").innerHTML="<span style=color:var(--ok)>✅ Connected!</span>";
-        localStorage.setItem("sm_fb_config",JSON.stringify({apiKey,projectId}));
-        loadUsers();
-    }catch(e){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>❌ "+e.message+"</span>"}
+        if(typeof firebase!=='undefined'){
+            if(!firebase.apps.length){firebase.initializeApp({apiKey:apiKey,projectId:projectId})}
+            fbDb=firebase.firestore();
+            document.getElementById("fbStatus").innerHTML="<span style=color:var(--ok)>&#x2705; Connected!</span>";
+            localStorage.setItem("sm_fb_config",JSON.stringify({apiKey,projectId}));
+            loadUsers();loadActivations();
+        }else{document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>&#x26A0;&#xFE0F; Firebase SDK not loaded</span>"}
+    }catch(e){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>&#x274C; "+e.message+"</span>"}
 }
 function loadUsers(){
     if(!fbDb){document.getElementById("fbStatus").innerHTML="<span style=color:var(--sec)>⚠️ Connect Firebase kwanza</span>";return}
@@ -42,15 +48,40 @@ function loadUsers(){
     })
     .catch(e=>{document.getElementById("usersList").innerHTML="<span style=color:var(--sec)>❌ "+e.message+"</span>"});
 }
+function loadActivations(){
+    if(!fbDb)return;
+    const el=document.getElementById("activationsList");
+    if(!el)return;
+    el.innerHTML="🔄 Loading...";
+    fbDb.collection("licenseActivations").limit(50).get()
+    .then(snap=>{
+        if(snap.empty){el.innerHTML="<p>Hakuna license activations bado</p>";return}
+        let html="";
+        snap.forEach(doc=>{
+            const a=doc.data();
+            const act=a.activatedAt?new Date(a.activatedAt).toLocaleString():"N/A";
+            const device=a.deviceId?a.deviceId.substring(0,12)+"...":"N/A";
+            html+=`<div style="background:var(--bg);padding:10px;border-radius:8px;margin-bottom:6px;font-size:.75rem">`;
+            html+=`<div><strong>Key:</strong> ${a.key?a.key.substring(0,20)+"...":"N/A"}</div>`;
+            html+=`<div><strong>Device:</strong> ${device}</div>`;
+            html+=`<div><strong>Activated:</strong> ${act}</div></div>`;
+        });
+        el.innerHTML=html;
+    })
+    .catch(e=>{el.innerHTML="<span style=color:var(--sec)>❌ "+e.message+"</span>"});
+}
 // Auto-load saved config
 (function(){
     const saved=localStorage.getItem("sm_fb_config");
+    const apiKey=document.getElementById("fbApiKey");
+    const project=document.getElementById("fbProject");
     if(saved){
-        try{const c=JSON.parse(saved);document.getElementById("fbApiKey").value=c.apiKey||"";document.getElementById("fbProject").value=c.projectId||""}catch(e){}
+        try{const c=JSON.parse(saved);apiKey.value=c.apiKey||FB_API_KEY;project.value=c.projectId||FB_PROJECT_ID}catch(e){}
+    }else{
+        apiKey.value=FB_API_KEY;project.value=FB_PROJECT_ID;
     }
 })();
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--pri:#6C63FF;--sec:#FF6B6B;--ok:#4ECB71;--warn:#FFD93D;--bg:#F0F4FF;--card:#FFF;--txt:#2D3436;--txt2:#636E72;--brd:#e0e0e0}
@@ -296,12 +327,18 @@ textarea.inp{resize:vertical;min-height:60px;font-family:inherit}
             <div id="fbStatus" style="font-size:.8rem;margin-bottom:8px"></div>
             <div id="usersList" style="font-size:.85rem;color:var(--txt2)">Bofya "🔗 Connect" ili kuona watoto wote</div>
         </div>
+        <div class="card" style="margin-top:16px">
+            <h2>🔐 License Activations</h2>
+            <p style="font-size:.8rem;color:var(--txt2);margin-bottom:12px">Keys zilizofungwa kwenye device (device binding)</p>
+            <div id="activationsList" style="font-size:.8rem;color:var(--txt2)">Bofya "🔗 Connect" ili kuona activations</div>
+        </div>
     </div>
 
     <div style="height:80px"></div>
     <div class="bottom-nav">
         <div class="nav-item act" onclick="showTab('keys')"><span class="nav-ic">🔑</span>Keys</div>
         <div class="nav-item" onclick="showTab('gen')"><span class="nav-ic">➕</span>Generate</div>
+        <div class="nav-item" onclick="showTab('users')"><span class="nav-ic">👶</span>Users</div>
         <div class="nav-item" onclick="showTab('settings')"><span class="nav-ic">⚙️</span>Settings</div>
         <div class="nav-item" onclick="showTab('reports')"><span class="nav-ic">📊</span>Reports</div>
     </div>
@@ -600,7 +637,7 @@ function showTab(name){
     document.querySelectorAll('.tab').forEach(t=>{if(t.textContent.toLowerCase().includes(name.substring(0,3)))t.classList.add('act')});
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('act'));
     const navItems=document.querySelectorAll('.nav-item');
-    const tabOrder=['keys','gen','settings','reports','users'];
+    const tabOrder=['keys','gen','users','settings','reports'];
     const idx=tabOrder.indexOf(name);
     if(idx>=0&&navItems[idx])navItems[idx].classList.add('act');
 }
