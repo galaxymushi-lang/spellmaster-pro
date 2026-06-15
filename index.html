@@ -9,8 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Interactive spelling app for kids">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--pri:#6C63FF;--sec:#FF6B6B;--ok:#4ECB71;--warn:#FFD93D;--bg:#F0F4FF;--card:#FFF;--txt:#2D3436;--txt2:#636E72;--brd:#e0e0e0}
@@ -270,18 +268,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 </head>
 <body>
 <div class="time-limit-bar hidden" id="timeBar"></div>
-
-<!-- License Key Screen -->
-<div id="licenseScreen" class="screen welcome-screen">
-    <div class="mascot-big" style="animation:float 2s ease-in-out infinite">🔑</div>
-    <h1 class="welcome-title" style="animation:bounce 2s ease infinite">SpellMaster Pro</h1>
-    <p class="welcome-sub" style="animation:fadeInUp 1s ease">Enter your license key to activate</p>
-    <input type="text" id="licenseKeyIn" class="nm-in" placeholder="SM-XXXXX-XXXX" style="font-family:monospace;text-transform:uppercase;animation:fadeInUp 1.2s ease" onkeypress="if(event.key==='Enter')activateBtn()">
-    <p id="licenseMsg" style="color:#ff6b6b;font-size:.85rem;margin-bottom:10px;min-height:20px"></p>
-    <button class="btn btn-p" onclick="activateBtn()" style="animation:fadeInUp 1.4s ease">Activate ✅</button>
-    <p style="margin-top:16px;font-size:.75rem;color:var(--txt2);animation:fadeInUp 1.6s ease">Need a key? Contact <a href="mailto:galaxymushizo@gmail.com" style="color:var(--pri);text-decoration:underline">galaxymushizo@gmail.com</a></p>
-    <p style="margin-top:12px;font-size:.7rem;opacity:.5;animation:fadeInUp 2s ease">From Galactos Group 💜</p>
-</div>
 
 <!-- Profile Selection -->
 <div id="profileScreen" class="screen welcome-screen hidden">
@@ -729,161 +715,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t
 <div id="starsC" class="stars-c"></div>
 
 <script>
-// ===== LOCAL STORAGE =====
-const FB_CONFIG={
-  apiKey: "AIzaSyDatNJu54OvBcloosvrdTIi1ebxPRXprAQ",
-  projectId: "spellmaster-pro",
-};
-// Firebase is optional - only works if Firestore is enabled with public rules
-let fbDb=null;
-let fbInitAttempted=0;
-function initFirebase(){
-    if(fbDb||fbInitAttempted>=3)return;
-    fbInitAttempted++;
-    try{
-        if(FB_CONFIG.apiKey&&FB_CONFIG.apiKey!=='YOUR_API_KEY'&&typeof firebase!=='undefined'){
-            if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);
-            fbDb=firebase.firestore();
-            console.log('✅ Firebase connected');
-            syncToFirebase();
-            syncLicenseBinding();
-        }
-    }catch(e){console.warn('Firebase unavailable:',e.message);fbDb=null}
-}
-function syncToFirebase(){
-    if(!fbDb||!S.name)return;
-    try{
-        const uid=S.name.toLowerCase().replace(/[^a-z0-9]/g,'_');
-        fbDb.collection('users').doc(uid).set({
-            name:S.name,avatar:S.avatar,pts:S.pts,lvl:S.lvl,
-            wLearn:S.wLearn,tCorr:S.tCorr,tAtt:S.tAtt,
-            strk:S.strk,pMin:S.pMin,
-            trophies:S.trophies.length,
-            lastSeen:new Date().toISOString(),
-            device:getDeviceFingerprint()
-        },{merge:true}).then(()=>{
-            if(!window._fbSynced){window._fbSynced=true;console.log('✅ User synced to Firebase')}
-        }).catch(e=>console.warn('Firebase sync:',e.message));
-    }catch(e){console.warn('Firebase sync err:',e.message)}
-}
-function syncLicenseBinding(){
-    if(!fbDb)return;
-    const lic=JSON.parse(localStorage.getItem('sm_license')||'{}');
-    if(!lic.key||!lic.deviceId)return;
-    const keyId=lic.key.replace(/[^a-zA-Z0-9]/g,'_');
-    fbDb.collection('licenseActivations').doc(keyId).set({
-        key:lic.key,deviceId:lic.deviceId,activatedAt:lic.activatedAt||new Date().toISOString()
-    },{merge:true}).catch(e=>console.warn('License sync:',e.message));
-}
-function checkFirebaseBinding(key){
-    return new Promise(resolve=>{
-        if(!fbDb){resolve(null);return}
-        fbDb.collection('licenseActivations').doc(key.replace(/[^a-zA-Z0-9]/g,'_')).get()
-        .then(doc=>resolve(doc.exists?doc.data():null))
-        .catch(()=>resolve(null));
-    });
-}
-
-function getDeviceFingerprint(){
-    const c=document.createElement('canvas');
-    const ctx=c.getContext('2d');
-    ctx.textBaseline='top';
-    ctx.font='14px Arial';
-    ctx.fillText('fingerprint',2,2);
-    const canvasData=c.toDataURL();
-    const raw=[
-        navigator.userAgent,
-        screen.width+'x'+screen.height,
-        screen.colorDepth,
-        new Date().getTimezoneOffset(),
-        navigator.language,
-        navigator.platform,
-        navigator.hardwareConcurrency||'unknown',
-        navigator.deviceMemory||'unknown',
-        canvasData.slice(-50)
-    ].join('|');
-    let hash=0;
-    for(let i=0;i<raw.length;i++){
-        hash=((hash<<5)-hash)+raw.charCodeAt(i);
-        hash|=0;
-    }
-    return Math.abs(hash).toString(36);
-}
-
-function decodeKey(key) {
-    try {
-        if (!key || !key.startsWith('SM-')) return null;
-        const parts = key.split('-');
-        if (parts.length < 3) return null;
-        const enc = parts[1];
-        const sig = parts[2];
-        const raw = atob(enc);
-        let hash = 0;
-        for (let i = 0; i < raw.length; i++) {
-            hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-            hash |= 0;
-        }
-        if (Math.abs(hash).toString(36).toUpperCase() !== sig) return null;
-        const [days, expiry] = raw.split('|');
-        return { days: parseInt(days), expiry: parseInt(expiry) };
-    } catch (e) {
-        return null;
-    }
-}
-
-function checkLicense() {
-    const data = JSON.parse(localStorage.getItem('sm_license') || '{}');
-    if (!data.key) return { valid: false, reason: 'no_key' };
-    const decoded = decodeKey(data.key);
-    if (!decoded) return { valid: false, reason: 'invalid' };
-    if (Date.now() > decoded.expiry) {
-        const daysUsed = Math.floor((Date.now() - (decoded.expiry - decoded.days * 86400000)) / 86400000);
-        return { valid: false, reason: 'expired', days: daysUsed };
-    }
-    const currentDevice = getDeviceFingerprint();
-    // Check activated keys list
-    const activated = JSON.parse(localStorage.getItem('sm_activated_keys') || '{}');
-    if (activated[data.key] && activated[data.key] !== currentDevice) {
-        return { valid: false, reason: 'device_mismatch' };
-    }
-    if (data.deviceId && data.deviceId !== currentDevice) {
-        return { valid: false, reason: 'device_mismatch' };
-    }
-    const daysLeft = Math.ceil((decoded.expiry - Date.now()) / 86400000);
-    return { valid: true, daysLeft, totalDays: decoded.days };
-}
-
-function activateKey(key) {
-    return new Promise(resolve=>{
-        const decoded = decodeKey(key);
-        if (!decoded) return resolve(false);
-        if (Date.now() > decoded.expiry) return resolve(false);
-        const deviceId = getDeviceFingerprint();
-        const activated = JSON.parse(localStorage.getItem('sm_activated_keys') || '{}');
-        if (activated[key] && activated[key] !== deviceId) return resolve(false);
-        activated[key] = deviceId;
-        localStorage.setItem('sm_activated_keys', JSON.stringify(activated));
-        const data = { key, activatedAt: new Date().toISOString(), deviceId };
-        localStorage.setItem('sm_license', JSON.stringify(data));
-        if(fbDb){
-            const keyId=key.replace(/[^a-zA-Z0-9]/g,'_');
-            fbDb.collection('licenseActivations').doc(keyId).set({
-                key, deviceId, activatedAt: data.activatedAt
-            },{merge:true}).catch(e=>console.warn('License sync:',e.message));
-        }
-        resolve(true);
-    });
-}
-
-function getDaysLeft() {
-    const lic = checkLicense();
-    return lic.valid ? lic.daysLeft : 0;
-}
-
-function resetLicense() {
-    localStorage.removeItem('sm_license');
-}
-
 // ===== STATE =====
 const S={name:'',avatar:'🦉',pts:0,lvl:1,mode:'listen',cat:'all',strk:0,lastDt:null,
 wLearn:0,tCorr:0,tAtt:0,pMin:0,lProg:{1:0,2:0,3:0},unLvl:[1],pracDays:[],trophies:[],
@@ -1026,40 +857,8 @@ function speak(text,rate){
 if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{speechSynthesis.getVoices()}}
 
 // ===== STORAGE =====
-function save(){try{const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d));if(fbDb&&S.name)syncToFirebase()}catch(e){console.warn('Storage full:',e.message)}}
+function save(){try{const d={...S};delete d.cWord;delete d.cDef;delete d.cSw;delete d.wList;delete d.wIdx;delete d.sCorr;delete d.sIncor;delete d.sPts;delete d.mPairs;delete d.mSel;delete d.mDone;delete d.fSlots;delete d.tmrInt;localStorage.setItem('smp',JSON.stringify(d))}catch(e){console.warn('Storage full:',e.message)}}
 function load(){const v=localStorage.getItem('smp');if(v){Object.assign(S,JSON.parse(v));return true}return false}
-
-// ===== LICENSE ACTIVATION =====
-function activateBtn() {
-    const raw = document.getElementById('licenseKeyIn').value.trim();
-    const key = raw.substring(0, 3).toUpperCase() + raw.substring(3);
-    const msg = document.getElementById('licenseMsg');
-    
-    if (!key) {
-        msg.textContent = '⚠️ Please enter a license key';
-        return;
-    }
-    
-    msg.textContent = '⏳ Checking license...';
-    activateKey(key).then(ok=>{
-        if (ok) {
-            msg.style.color = 'var(--ok)';
-            msg.textContent = '✅ License activated!';
-            setTimeout(() => {
-                document.getElementById('licenseScreen').classList.add('hidden');
-                document.getElementById('welcomeScreen').classList.remove('hidden');
-            }, 800);
-        } else {
-            msg.style.color = 'var(--sec)';
-            const existing = JSON.parse(localStorage.getItem('sm_license') || '{}');
-            if (existing.key && existing.key !== key) {
-                msg.textContent = '❌ This key is already used on another device!';
-            } else {
-                msg.textContent = '❌ Invalid or expired key. Contact admin.';
-            }
-        }
-    });
-}
 
 // ===== APP =====
 function pickAv(el){document.querySelectorAll('.av-opt').forEach(a=>a.classList.remove('sel'));el.classList.add('sel');S.avatar=el.dataset.a;document.getElementById('mascotBig').textContent=el.dataset.a;pSnd('click')}
@@ -1076,7 +875,7 @@ function initDash(){
     document.getElementById('greet').innerHTML=`Hello, <span>${S.name}</span>! ${S.avatar}`;
     updStreak();updStats();updLvl();updMode();updCat();genCal();loadDaily();applyTheme();showWotd();drawChart();drawLB();
     document.getElementById('dlCount').textContent=S.downloadedWords.length;
-    showScr('dash');checkStreakReminder();startLicenseTimer();syncToFirebase()}
+    showScr('dash');checkStreakReminder()}
 
 function updStreak(){const t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();if(S.lastDt&&S.lastDt!==t&&S.lastDt!==y)S.strk=0;document.getElementById('streak').textContent=S.strk}
 function updStats(){
@@ -1429,46 +1228,6 @@ function togHintSet(){S.sett.hints=!S.sett.hints;document.getElementById('hntTog
 function chgSpd(){S.sett.spd=parseFloat(document.getElementById('spSpd').value);save()}
 function setSndTheme(t,el){S.sett.sndTheme=t;save();pSnd('click');document.querySelectorAll('.snd-card').forEach(c=>c.classList.remove('act'));el.classList.add('act')}
 function switchUser(){S.lastUser=null;S.lastAvatar=null;S.rememberMe=false;S.name='';save();location.reload()}
-function updateLicenseInfo(){
-    const div=document.getElementById('licenseInfoDiv');
-    if(!div)return;
-    const lic=checkLicense();
-    if(lic.valid){
-        div.innerHTML=`<p style="color:var(--ok)">✅ Active - <strong>${lic.daysLeft} days</strong> remaining</p><p>Total: ${lic.totalDays} days</p>`;
-    } else {
-        div.innerHTML=`<p style="color:var(--sec)">❌ ${lic.reason==='expired'?'Expired':'No license'}</p>`;
-    }
-}
-
-let licTimerInterval=null;
-function startLicenseTimer(){
-    if(licTimerInterval)clearInterval(licTimerInterval);
-    updateLicTimer();
-    licTimerInterval=setInterval(updateLicTimer,1000);
-}
-function updateLicTimer(){
-    const el=document.getElementById('licTimer');
-    if(!el)return;
-    const data=JSON.parse(localStorage.getItem('sm_license')||'{}');
-    if(!data.key){el.textContent='🔒 No License';el.className='license-timer urgent';return}
-    const decoded=decodeKey(data.key);
-    if(!decoded){el.textContent='🔒 Invalid Key';el.className='license-timer urgent';return}
-    const now=Date.now();
-    const diff=decoded.expiry-now;
-    if(diff<=0){el.textContent='⏰ Expired!';el.className='license-timer urgent';return}
-    const days=Math.floor(diff/86400000);
-    const hours=Math.floor((diff%86400000)/3600000);
-    const mins=Math.floor((diff%3600000)/60000);
-    const secs=Math.floor((diff%60000)/1000);
-    if(days>0){
-        el.textContent=`⏳ ${days}d ${hours}h ${mins}m ${secs}s`;
-    }else{
-        el.textContent=`⏳ ${hours}h ${mins}m ${secs}s`;
-    }
-    if(days<=1){el.className='license-timer urgent'}
-    else if(days<=3){el.className='license-timer urgent'}
-    else{el.className='license-timer'}
-}
 function resetAll(){if(confirm('Reset ALL? Cannot undo!')){localStorage.removeItem('smp');location.reload()}}
 
 // ===== NAVIGATION =====
@@ -1639,7 +1398,7 @@ function updateLang(){const l=LANG[S.sett.lang||'en']||LANG.en;document.getEleme
 
 // ===== BACKUP & RESTORE =====
 function backupData(){
-    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||''};
+    const data={state:S,profiles:getProfiles(),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||''};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spellmaster_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();
     alert('✅ Backup downloaded!');
@@ -1657,7 +1416,7 @@ function emailBackup(){
         if(!email||!email.includes('@')){alert('❌ Enter valid email');return}
         localStorage.setItem('sm_backupEmail',email);
     }
-    const data={state:S,profiles:getProfiles(),license:JSON.parse(localStorage.getItem('sm_license')||'{}'),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||'',email:email,backupDate:new Date().toISOString()};
+    const data={state:S,profiles:getProfiles(),leaderboard:JSON.parse(localStorage.getItem('smp_lb')||'[]'),timeData:JSON.parse(localStorage.getItem('sm_timeData')||'{}'),pin:localStorage.getItem('sm_pin')||'',email:email,backupDate:new Date().toISOString()};
     const json=JSON.stringify(data);
     const encoded=btoa(unescape(encodeURIComponent(json)));
     const subject=`SpellMaster Pro Backup - ${S.name} - ${new Date().toLocaleDateString()}`;
@@ -1703,7 +1462,6 @@ function restoreData(){
 function applyRestore(data){
     if(data.state)localStorage.setItem('smp',JSON.stringify(data.state));
     if(data.profiles)saveProfiles(data.profiles);
-    if(data.license)localStorage.setItem('sm_license',JSON.stringify(data.license));
     if(data.leaderboard)localStorage.setItem('smp_lb',JSON.stringify(data.leaderboard));
     if(data.timeData)localStorage.setItem('sm_timeData',JSON.stringify(data.timeData));
     if(data.pin)localStorage.setItem('sm_pin',data.pin);
@@ -1718,20 +1476,6 @@ function saveParentEmail(){
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
-    initFirebase();
-    const lic=checkLicense();
-    if(!lic.valid){
-        document.getElementById('welcomeScreen').classList.add('hidden');
-        document.getElementById('licenseScreen').classList.remove('hidden');
-        if(lic.reason==='expired'){
-            document.getElementById('licenseMsg').style.color='var(--sec)';
-            document.getElementById('licenseMsg').textContent='⚠️ License expired! Contact admin for a new key.';
-        } else if(lic.reason==='device_mismatch'){
-            document.getElementById('licenseMsg').style.color='var(--sec)';
-            document.getElementById('licenseMsg').textContent='⚠️ This key is already used on another device!';
-        }
-        return;
-    }
     const loaded=load();
     initTimeLimit();
     if(loaded&&S.rememberMe&&S.lastUser){
@@ -1742,7 +1486,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     else{showScr('welcome');if(loaded)applyTheme()}
     document.getElementById('nameIn').addEventListener('keypress',e=>{if(e.key==='Enter')startApp()});
-    updateLicenseInfo();
     if(S.wLearn>=100){const btn=document.getElementById('certBtn');if(btn)btn.disabled=false}
     const savedEmail=localStorage.getItem('sm_backupEmail');
     if(savedEmail){const e1=document.getElementById('backupEmail');if(e1)e1.value=savedEmail;const e2=document.getElementById('pBackupEmail');if(e2)e2.value=savedEmail}
